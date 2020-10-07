@@ -261,3 +261,44 @@ class VTKSphere(BVTK_ImplicitFunction, Node, BVTK_Node):
 
 add_class(VTKSphere)
 
+# -----------------------------------------------------------------------------
+
+class VTKTransform(Node, BVTK_Node):
+    '''Manually created node to provide vtkThreshold.
+    Provides just the ThresholdBetween(value1,value2) mode.
+    To do ThresholdByUpper set value1 to -inf.
+    To do ThresholdByLower set value2 to +inf.
+    User must specify the name and type (point or cell data)
+    of the input attribute.
+    '''
+    bl_idname = 'VTKTransformType'
+    bl_label = 'vtkTransform'
+
+    m_Scale: bpy.props.FloatVectorProperty(name='Scale X/Y/Z', default=[1., 1., 1.], size=3)
+    m_Rotation: bpy.props.FloatVectorProperty(name='Rotation X/Y/Z', default=[0., 0., 0.],
+                                            min=0.,
+                                              max=360., size=3)
+    m_Translation: bpy.props.FloatVectorProperty(name='Translation X/Y/Z', default=[0., 0., 0.], size=3)
+    #m_AttrName:   bpy.props.StringProperty (name='Attribute Name', default='' )
+    #e_AttrType:   bpy.props.EnumProperty   (name='Attribute Type', default='PointData', items=e_AttrType_items )
+
+    b_properties: bpy.props.BoolVectorProperty(name="", size=3, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties(self):
+        return ['m_Scale', 'm_Rotation', 'm_Translation']
+
+    def m_connections(self):
+        return ([], ['output'], [], [])
+
+    @run_custom_code
+    def apply_properties(self, vtkobj):
+        vtkobj.Scale(*self.m_Scale)
+        vtkobj.RotateX(self.m_Rotation[0])
+        vtkobj.RotateY(self.m_Rotation[1])
+        vtkobj.RotateZ(self.m_Rotation[2])
+        vtkobj.Translate(*self.m_Translation)
+
+add_class(VTKTransform)
+TYPENAMES.append('VTKTransformType')
+
+

@@ -237,7 +237,7 @@ vtk.vtkParametricFunction          # parametric function
 
 superclass_name =  "\nSuperclass: ([^\n]*)"
 
-def anchestors( cls ):
+def ancestors(cls):
     if not cls.__doc__:
         return []
     match = re.search( superclass_name, cls.__doc__)
@@ -250,7 +250,7 @@ def anchestors( cls ):
             superclass = getattr(vtk, name )
 
         if superclass:
-            values = anchestors( superclass)
+            values = ancestors(superclass)
             values.append( name )
             return values
         else:
@@ -287,7 +287,7 @@ def inspect_cls( cls_name ):
     except:
         return
 
-    parents = anchestors( c )
+    parents = ancestors(c)
     parents.reverse()
 
     #interesting = issubclass( c, vtk.vtkAlgorithm )
@@ -445,7 +445,7 @@ names = [ x for x in sorted(dir(vtk)) if x.startswith('vtk') and ( not "." in x 
 
 #------------------ print hierarchy ---------------
 #
-# parents = [  " - ".join( anchestors( getattr(vtk,x) ) ) + " - " + x  for x in names ]
+# parents = [  " - ".join( ancestors( getattr(vtk,x) ) ) + " - " + x  for x in names ]
 # parents.sort()
 #
 # counter = 0
