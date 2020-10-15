@@ -197,6 +197,23 @@ add_class( VTKPerspectiveTransform )
 TYPENAMES.append('VTKPerspectiveTransformType' )
 
 #--------------------------------------------------------------
+class VTKSMPTransform(Node, BVTK_Node):
+
+    bl_idname = 'VTKSMPTransformType'
+    bl_label  = 'vtkSMPTransform'
+    
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return []
+    def m_connections( self ):
+        return ([], [], ['Input'], ['self']) 
+    
+add_class( VTKSMPTransform )        
+TYPENAMES.append('VTKSMPTransformType' )
+
+#--------------------------------------------------------------
 class VTKSphericalTransform(Node, BVTK_Node):
 
     bl_idname = 'VTKSphericalTransformType'

@@ -2424,6 +2424,26 @@ add_class( VTKTulipReader )
 TYPENAMES.append('VTKTulipReaderType' )
 
 #--------------------------------------------------------------
+class VTKUGFacetReader(Node, BVTK_Node):
+
+    bl_idname = 'VTKUGFacetReaderType'
+    bl_label  = 'vtkUGFacetReader'
+    
+    m_Merging   : bpy.props.BoolProperty  ( name='Merging',    default=True )
+    m_FileName  : bpy.props.StringProperty( name='FileName',   default="", subtype='FILE_PATH' )
+    m_PartNumber: bpy.props.IntProperty   ( name='PartNumber', default=-1 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=3, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_Merging','m_FileName','m_PartNumber',]
+    def m_connections( self ):
+        return ([], ['output'], [], []) 
+    
+add_class( VTKUGFacetReader )        
+TYPENAMES.append('VTKUGFacetReaderType' )
+
+#--------------------------------------------------------------
 class VTKUnstructuredGridReader(Node, BVTK_Node):
 
     bl_idname = 'VTKUnstructuredGridReaderType'
@@ -2527,7 +2547,7 @@ class VTKWindBladeReader(Node, BVTK_Node):
     bl_label  = 'vtkWindBladeReader'
     
     m_Filename : bpy.props.StringProperty   ( name='Filename',  default="" )
-    m_SubExtent: bpy.props.IntVectorProperty( name='SubExtent', default=[163131584, 32699, 163188880, 32699, 1000000000, 707404601], size=6 )
+    m_SubExtent: bpy.props.IntVectorProperty( name='SubExtent', default=[0, 0, 1, 0, 0, 0], size=6 )
     
     b_properties: bpy.props.BoolVectorProperty(name="", size=2, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
@@ -2622,6 +2642,27 @@ class VTKXMLHierarchicalDataReader(Node, BVTK_Node):
     
 add_class( VTKXMLHierarchicalDataReader )        
 TYPENAMES.append('VTKXMLHierarchicalDataReaderType' )
+
+#--------------------------------------------------------------
+class VTKXMLHyperOctreeReader(Node, BVTK_Node):
+
+    bl_idname = 'VTKXMLHyperOctreeReaderType'
+    bl_label  = 'vtkXMLHyperOctreeReader'
+    
+    m_ReadFromInputString: bpy.props.BoolProperty     ( name='ReadFromInputString', default=False )
+    m_FileName           : bpy.props.StringProperty   ( name='FileName',            default="", subtype='FILE_PATH' )
+    m_TimeStep           : bpy.props.IntProperty      ( name='TimeStep',            default=0 )
+    m_TimeStepRange      : bpy.props.IntVectorProperty( name='TimeStepRange',       default=[0, 0], size=2 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=4, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_ReadFromInputString','m_FileName','m_TimeStep','m_TimeStepRange',]
+    def m_connections( self ):
+        return ([], ['output'], ['ReaderErrorObserver'], []) 
+    
+add_class( VTKXMLHyperOctreeReader )        
+TYPENAMES.append('VTKXMLHyperOctreeReaderType' )
 
 #--------------------------------------------------------------
 class VTKXMLImageDataReader(Node, BVTK_Node):

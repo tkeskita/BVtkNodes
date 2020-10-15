@@ -139,6 +139,37 @@ else:
 
 l.info("Loaded VTK version: " + vtk.vtkVersion().GetVTKVersion())
 l.info("VTK base path: " + vtk.__file__)
+compareGeneratedAndCurrentVTKVersion()
+
+@persistent
+def compareGeneratedAndCurrentVTKVersion():
+    '''Check if the vtk version with which the files were generated is equal to the current vtk version and log a warning if not'''
+    import re
+    import os
+
+    vtk_re = re.compile("^\# VTK Version\: (\d+)\.(\d+).*$")
+
+    gen_vtk_path = os.path.abspath(gen_VTKFilters.__file__)
+    gen_vtk_f = open(gen_vtk_path, 'r')
+    lines = gen_vtk_f.readlines()
+    major_current_version = vtk.vtkVersion().GetVTKVersion().GetMajorVersion()
+    minor_current_version = vtk.vtkVersion().GetVTKVersion().GetMinorVersion()
+
+    major_gen_version = minor_gen_version = None
+    # Strips the newline character
+    for line in lines:
+        matches = vtk_re_enums.match(line)
+
+        if matches is not None:
+            major_gen_version, minor_gen_version = matches.group(1), matches.group(2)
+            break
+
+    if major_gen_version is None:
+        l.warning("Warning: Generated VTK file did not provide a VTK version")
+
+    elif major_gen_version != major_current_version or minor_gen_version != minor_current_version:
+        l.warning("Warning: Generated VTK file has version %d.%d, but blender's VTK version is %d.%d" % (major_gen_version, minor_gen_version, major_current_version, minor_current_version))
+    
 
 
 @persistent

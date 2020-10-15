@@ -1344,6 +1344,36 @@ add_class( VTKXMLHierarchicalBoxDataWriter )
 TYPENAMES.append('VTKXMLHierarchicalBoxDataWriterType' )
 
 #--------------------------------------------------------------
+class VTKXMLHyperOctreeWriter(Node, BVTK_Node):
+
+    bl_idname = 'VTKXMLHyperOctreeWriterType'
+    bl_label  = 'vtkXMLHyperOctreeWriter'
+    e_ByteOrder_items=[ (x,x,x) for x in ['BigEndian', 'LittleEndian']]
+    e_DataMode_items=[ (x,x,x) for x in ['Ascii', 'Binary', 'Appended']]
+    e_HeaderType_items=[ (x,x,x) for x in ['UInt32', 'UInt64']]
+    e_IdType_items=[ (x,x,x) for x in ['Int32', 'Int64']]
+    
+    m_EncodeAppendedData : bpy.props.BoolProperty  ( name='EncodeAppendedData',  default=True )
+    m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
+    m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
+    m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
+    m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
+    e_ByteOrder          : bpy.props.EnumProperty  ( name='ByteOrder',           default="LittleEndian", items=e_ByteOrder_items )
+    e_DataMode           : bpy.props.EnumProperty  ( name='DataMode',            default="Appended", items=e_DataMode_items )
+    e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
+    e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=9, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+    def m_connections( self ):
+        return (['input'], [], [], []) 
+    
+add_class( VTKXMLHyperOctreeWriter )        
+TYPENAMES.append('VTKXMLHyperOctreeWriterType' )
+
+#--------------------------------------------------------------
 class VTKXMLImageDataWriter(Node, BVTK_Node):
 
     bl_idname = 'VTKXMLImageDataWriterType'

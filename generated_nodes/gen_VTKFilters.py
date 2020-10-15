@@ -156,6 +156,27 @@ add_class( VTKClipDataSet )
 TYPENAMES.append('VTKClipDataSetType' )
 
 #--------------------------------------------------------------
+class VTKClipHyperOctree(Node, BVTK_Node):
+
+    bl_idname = 'VTKClipHyperOctreeType'
+    bl_label  = 'vtkClipHyperOctree'
+    
+    m_GenerateClipScalars  : bpy.props.BoolProperty ( name='GenerateClipScalars',   default=True )
+    m_GenerateClippedOutput: bpy.props.BoolProperty ( name='GenerateClippedOutput', default=True )
+    m_InsideOut            : bpy.props.BoolProperty ( name='InsideOut',             default=True )
+    m_Value                : bpy.props.FloatProperty( name='Value',                 default=0.0 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=4, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_GenerateClipScalars','m_GenerateClippedOutput','m_InsideOut','m_Value',]
+    def m_connections( self ):
+        return (['input'], ['output 0', 'output 1'], ['ClipFunction'], []) 
+    
+add_class( VTKClipHyperOctree )        
+TYPENAMES.append('VTKClipHyperOctreeType' )
+
+#--------------------------------------------------------------
 class VTKClipPolyData(Node, BVTK_Node):
 
     bl_idname = 'VTKClipPolyDataType'
@@ -569,10 +590,10 @@ class VTKImageFlip(Node, BVTK_Node):
     
     m_AutoCropOutput          : bpy.props.BoolProperty       ( name='AutoCropOutput',           default=True )
     m_Border                  : bpy.props.BoolProperty       ( name='Border',                   default=True )
-    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=False )
+    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=True )
     m_FlipAboutOrigin         : bpy.props.BoolProperty       ( name='FlipAboutOrigin',          default=True )
     m_GenerateStencilOutput   : bpy.props.BoolProperty       ( name='GenerateStencilOutput',    default=True )
-    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=False )
+    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=True )
     m_Interpolate             : bpy.props.BoolProperty       ( name='Interpolate',              default=True )
     m_Mirror                  : bpy.props.BoolProperty       ( name='Mirror',                   default=True )
     m_Optimization            : bpy.props.BoolProperty       ( name='Optimization',             default=True )
@@ -583,7 +604,7 @@ class VTKImageFlip(Node, BVTK_Node):
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
     m_FilteredAxes            : bpy.props.IntProperty        ( name='FilteredAxes',             default=0 )
     m_FilteredAxis            : bpy.props.IntProperty        ( name='FilteredAxis',             default=0 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=4 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -621,9 +642,9 @@ class VTKImagePermute(Node, BVTK_Node):
     
     m_AutoCropOutput          : bpy.props.BoolProperty       ( name='AutoCropOutput',           default=True )
     m_Border                  : bpy.props.BoolProperty       ( name='Border',                   default=True )
-    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=False )
+    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=True )
     m_GenerateStencilOutput   : bpy.props.BoolProperty       ( name='GenerateStencilOutput',    default=True )
-    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=False )
+    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=True )
     m_Interpolate             : bpy.props.BoolProperty       ( name='Interpolate',              default=True )
     m_Mirror                  : bpy.props.BoolProperty       ( name='Mirror',                   default=True )
     m_Optimization            : bpy.props.BoolProperty       ( name='Optimization',             default=True )
@@ -631,7 +652,7 @@ class VTKImagePermute(Node, BVTK_Node):
     m_TransformInputSampling  : bpy.props.BoolProperty       ( name='TransformInputSampling',   default=True )
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=4 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -670,9 +691,9 @@ class VTKImageResample(Node, BVTK_Node):
     
     m_AutoCropOutput          : bpy.props.BoolProperty       ( name='AutoCropOutput',           default=True )
     m_Border                  : bpy.props.BoolProperty       ( name='Border',                   default=True )
-    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=False )
+    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=True )
     m_GenerateStencilOutput   : bpy.props.BoolProperty       ( name='GenerateStencilOutput',    default=True )
-    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=False )
+    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=True )
     m_Interpolate             : bpy.props.BoolProperty       ( name='Interpolate',              default=True )
     m_Mirror                  : bpy.props.BoolProperty       ( name='Mirror',                   default=True )
     m_Optimization            : bpy.props.BoolProperty       ( name='Optimization',             default=True )
@@ -681,7 +702,7 @@ class VTKImageResample(Node, BVTK_Node):
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
     m_Dimensionality          : bpy.props.IntProperty        ( name='Dimensionality',           default=3 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=4 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -720,9 +741,9 @@ class VTKImageReslice(Node, BVTK_Node):
     
     m_AutoCropOutput          : bpy.props.BoolProperty       ( name='AutoCropOutput',           default=True )
     m_Border                  : bpy.props.BoolProperty       ( name='Border',                   default=True )
-    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=False )
+    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=True )
     m_GenerateStencilOutput   : bpy.props.BoolProperty       ( name='GenerateStencilOutput',    default=True )
-    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=False )
+    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=True )
     m_Interpolate             : bpy.props.BoolProperty       ( name='Interpolate',              default=True )
     m_Mirror                  : bpy.props.BoolProperty       ( name='Mirror',                   default=True )
     m_Optimization            : bpy.props.BoolProperty       ( name='Optimization',             default=True )
@@ -730,7 +751,7 @@ class VTKImageReslice(Node, BVTK_Node):
     m_TransformInputSampling  : bpy.props.BoolProperty       ( name='TransformInputSampling',   default=True )
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=4 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -770,9 +791,9 @@ class VTKImageResliceToColors(Node, BVTK_Node):
     m_AutoCropOutput          : bpy.props.BoolProperty       ( name='AutoCropOutput',           default=True )
     m_Border                  : bpy.props.BoolProperty       ( name='Border',                   default=True )
     m_Bypass                  : bpy.props.BoolProperty       ( name='Bypass',                   default=True )
-    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=False )
+    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=True )
     m_GenerateStencilOutput   : bpy.props.BoolProperty       ( name='GenerateStencilOutput',    default=True )
-    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=False )
+    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=True )
     m_Interpolate             : bpy.props.BoolProperty       ( name='Interpolate',              default=True )
     m_Mirror                  : bpy.props.BoolProperty       ( name='Mirror',                   default=True )
     m_Optimization            : bpy.props.BoolProperty       ( name='Optimization',             default=True )
@@ -780,7 +801,7 @@ class VTKImageResliceToColors(Node, BVTK_Node):
     m_TransformInputSampling  : bpy.props.BoolProperty       ( name='TransformInputSampling',   default=True )
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=4 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -820,9 +841,9 @@ class VTKImageSlabReslice(Node, BVTK_Node):
     
     m_AutoCropOutput          : bpy.props.BoolProperty       ( name='AutoCropOutput',           default=True )
     m_Border                  : bpy.props.BoolProperty       ( name='Border',                   default=True )
-    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=False )
+    m_EnableSMP               : bpy.props.BoolProperty       ( name='EnableSMP',                default=True )
     m_GenerateStencilOutput   : bpy.props.BoolProperty       ( name='GenerateStencilOutput',    default=True )
-    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=False )
+    m_GlobalDefaultEnableSMP  : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',   default=True )
     m_Interpolate             : bpy.props.BoolProperty       ( name='Interpolate',              default=True )
     m_Mirror                  : bpy.props.BoolProperty       ( name='Mirror',                   default=True )
     m_Optimization            : bpy.props.BoolProperty       ( name='Optimization',             default=True )
@@ -830,7 +851,7 @@ class VTKImageSlabReslice(Node, BVTK_Node):
     m_TransformInputSampling  : bpy.props.BoolProperty       ( name='TransformInputSampling',   default=True )
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=4 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=2 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -867,11 +888,11 @@ class VTKImageStencil(Node, BVTK_Node):
     bl_label  = 'vtkImageStencil'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=True )
     m_ReverseStencil        : bpy.props.BoolProperty       ( name='ReverseStencil',         default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
     m_BackgroundValue       : bpy.props.FloatProperty      ( name='BackgroundValue',        default=1.0 )
     e_SplitMode             : bpy.props.EnumProperty       ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty  ( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )

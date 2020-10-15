@@ -266,6 +266,9 @@ filenames = { 'Source':         'gen_VTKSources.py',
               'Integrator':     'gen_VTKIntegrator.py',
 }
 
+# Create in subdirectory
+filenames = {key: 'generated_nodes/' + val for key, val in filenames.items()}
+
 # Call generation routine for each class
 generate('Source')
 generate('Reader')

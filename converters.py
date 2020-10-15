@@ -3,6 +3,9 @@ from .core import l # Import logging
 from .core import *
 import bmesh
 
+#TODO: Actually include
+#from vtk_numpy_utils.loader import VTKLoader, VTKConverter
+
 try:
     import pyopenvdb
     with_pyopenvdb = True
@@ -95,6 +98,95 @@ def unwrap_and_color_the_mesh(ob, data, name, ramp, bm, generate_material):
         create_material(ob, texture.name)
     elif generate_material:
         create_material(ob, None)
+
+def generate_vertex_colors(ob, numpy_mesh, name, ramp, mesh, generate_material):
+    # Set colors and color legend
+    if ramp and ramp.color_by:
+        assert(name in numpy_mesh.point_data)
+
+        texture = ramp.get_texture()
+        if ramp.texture_type == 'IMAGE':
+            image_width = 1000
+            img = image_from_ramp(texture.color_ramp, texture.name, image_width)
+
+        # Color legend
+        vrange = (ramp.min, ramp.max)
+        if ramp.lut:
+            colors = create_lut_v2(name, vrange, 6, texture, h=ramp.height)
+
+        vcol_lay = mesh.vertex_colors.new()
+        #colors = numpy_mesh.point_data[name]
+        colors_and_alpha = np.concatenate([colors, np.ones_like(colors[..., :1])], axis=-1)
+        vcol_lay.data.foreach_set("color", numpy_mesh.point_data[name])
+
+
+
+def vtkdata_to_blender_v2(data, name, ramp=None, smooth=False, generate_material=False):
+    '''Convert VTK data to Blender mesh object, using optionally
+    given color ramp and normal smoothing. Optionally generates default
+    material, which includes also color information if ramp is given.
+
+    Note: This is the original implementation and does not consider
+    VTK cell types (vertex semantics) in conversion, so it works best
+    with polygon generators like vtkGeometryFilter.
+    '''
+    if not data:
+        l.error('no data!')
+        return
+    if issubclass(data.__class__, vtk.vtkImageData):
+        imgdata_to_blender(data, name)
+        return
+    me, ob = mesh_and_object(name)
+    if me.is_editmode:
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    err = 0 # Number of errors encountered
+    mesh = bmesh.new()
+    # bm.from_mesh(me) # fill it in from a Mesh
+
+    converter = VTKConverter(data)
+    numpy_mesh = converter.createNumpyMesh()
+
+    # Get vertices
+    nr_points = numpy_mesh.getNrPoints()
+    mesh.vertices.add(nr_points)
+    mesh.vertices.foreach_set("co", numpy_mesh.getPoints())  # TODO: Reshape([-1])?
+
+    all_cells = numpy_mesh.getMixedCells()
+
+    for cells_type, cells in all_cells.items():
+        # Remove duplicates
+        cells = np.unique(cells, axis=0)
+        nr_cells = cells.shape[0]
+        nr_points_per_cell = cells.shape[-1]
+
+        # Remove last vert if it is same as first vert
+        # We assume this is the same for all cells of the same type
+        assert(not np.any(cells[..., -1] == cells[..., 0]) or np.all(cells[..., -1] == cells[..., 0]))
+
+        if nr_points_per_cell == 2:
+            mesh.edges.add(nr_cells)
+            mesh.edges.foreach_set("vertices", cells)
+        else:
+            mesh.faces.add(nr_cells)
+            mesh.faces.foreach_set("vertices", cells)
+            mesh.faces.foreach_set("smooth", [smooth] * nr_cells)
+
+
+
+    # Set normals
+    point_normals = numpy_mesh.getPointNormals()
+    cell_normals = numpy_mesh.getCellNormals()
+    if cell_normals:
+        bm.faces.ensure_lookup_table()
+        mesh.faces.foreach_set("normal", cell_normals)
+    if point_normals:
+        mesh.vertices.co.foreach_set("normal", point_normals)
+
+    # Set colors and color legend
+    unwrap_and_color_the_mesh(ob, data, name, ramp, mesh, generate_material)
+    bm.to_mesh(me)  # store bmesh to mesh
+    l.info('conversion successful, verts = ' + str(nr_points))
+
 
 
 def vtkdata_to_blender(data, name, ramp=None, smooth=False, generate_material=False):

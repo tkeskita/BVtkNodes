@@ -335,6 +335,7 @@ class VTKArrayCalculator(Node, BVTK_Node):
 
     bl_idname = 'VTKArrayCalculatorType'
     bl_label  = 'vtkArrayCalculator'
+    e_AttributeMode_items=[ (x,x,x) for x in ['Default', 'UsePointData', 'UseCellData', 'UseVertexData', 'UseEdgeData']]
     e_AttributeType_items=[ (x,x,x) for x in ['Default', 'PointData', 'CellData', 'VertexData', 'EdgeData', 'RowData']]
     
     m_CoordinateResults   : bpy.props.BoolProperty  ( name='CoordinateResults',    default=True )
@@ -345,12 +346,13 @@ class VTKArrayCalculator(Node, BVTK_Node):
     m_ResultArrayName     : bpy.props.StringProperty( name='ResultArrayName',      default="resultArray" )
     m_ResultArrayType     : bpy.props.IntProperty   ( name='ResultArrayType',      default=11 )
     m_ReplacementValue    : bpy.props.FloatProperty ( name='ReplacementValue',     default=0.0 )
-    e_AttributeType       : bpy.props.EnumProperty  ( name='AttributeType',        default="Default", items=e_AttributeType_items )
+    e_AttributeMode       : bpy.props.EnumProperty  ( name='AttributeMode',        default="Default", items=e_AttributeMode_items )
+    e_AttributeType       : bpy.props.EnumProperty  ( name='AttributeType',        default="VertexData", items=e_AttributeType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=9, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=10, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_CoordinateResults','m_ReplaceInvalidValues','m_ResultNormals','m_ResultTCoords','m_Function','m_ResultArrayName','m_ResultArrayType','m_ReplacementValue','e_AttributeType',]
+        return ['m_CoordinateResults','m_ReplaceInvalidValues','m_ResultNormals','m_ResultTCoords','m_Function','m_ResultArrayName','m_ResultArrayType','m_ReplacementValue','e_AttributeMode','e_AttributeType',]
     def m_connections( self ):
         return (['input'], ['output'], [], []) 
     
@@ -1526,7 +1528,7 @@ class VTKEuclideanClusterExtraction(Node, BVTK_Node):
     
     m_ColorClusters     : bpy.props.BoolProperty       ( name='ColorClusters',      default=False )
     m_ScalarConnectivity: bpy.props.BoolProperty       ( name='ScalarConnectivity', default=False )
-    m_Radius            : bpy.props.FloatProperty      ( name='Radius',             default=3.95e-322 )
+    m_Radius            : bpy.props.FloatProperty      ( name='Radius',             default=0.0 )
     e_ExtractionMode    : bpy.props.EnumProperty       ( name='ExtractionMode',     default="LargestCluster", items=e_ExtractionMode_items )
     m_ClosestPoint      : bpy.props.FloatVectorProperty( name='ClosestPoint',       default=[0.0, 0.0, 0.0], size=3 )
     m_ScalarRange       : bpy.props.FloatVectorProperty( name='ScalarRange',        default=[0.0, 1.0], size=2 )
@@ -2637,6 +2639,134 @@ add_class( VTKHull )
 TYPENAMES.append('VTKHullType' )
 
 #--------------------------------------------------------------
+class VTKHyperOctreeContourFilter(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeContourFilterType'
+    bl_label  = 'vtkHyperOctreeContourFilter'
+    
+    m_NumberOfContours: bpy.props.IntProperty( name='NumberOfContours', default=1 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_NumberOfContours',]
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKHyperOctreeContourFilter )        
+TYPENAMES.append('VTKHyperOctreeContourFilterType' )
+
+#--------------------------------------------------------------
+class VTKHyperOctreeCutter(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeCutterType'
+    bl_label  = 'vtkHyperOctreeCutter'
+    e_SortBy_items=[ (x,x,x) for x in ['SortByValue', 'SortByCell']]
+    
+    m_GenerateCutScalars: bpy.props.BoolProperty( name='GenerateCutScalars', default=True )
+    m_NumberOfContours  : bpy.props.IntProperty ( name='NumberOfContours',   default=1 )
+    e_SortBy            : bpy.props.EnumProperty( name='SortBy',             default="SortByValue", items=e_SortBy_items )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=3, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_GenerateCutScalars','m_NumberOfContours','e_SortBy',]
+    def m_connections( self ):
+        return (['input'], ['output'], ['CutFunction'], []) 
+    
+add_class( VTKHyperOctreeCutter )        
+TYPENAMES.append('VTKHyperOctreeCutterType' )
+
+#--------------------------------------------------------------
+class VTKHyperOctreeDepth(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeDepthType'
+    bl_label  = 'vtkHyperOctreeDepth'
+    
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return []
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKHyperOctreeDepth )        
+TYPENAMES.append('VTKHyperOctreeDepthType' )
+
+#--------------------------------------------------------------
+class VTKHyperOctreeDualGridContourFilter(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeDualGridContourFilterType'
+    bl_label  = 'vtkHyperOctreeDualGridContourFilter'
+    
+    m_NumberOfContours: bpy.props.IntProperty( name='NumberOfContours', default=1 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_NumberOfContours',]
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKHyperOctreeDualGridContourFilter )        
+TYPENAMES.append('VTKHyperOctreeDualGridContourFilterType' )
+
+#--------------------------------------------------------------
+class VTKHyperOctreeLimiter(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeLimiterType'
+    bl_label  = 'vtkHyperOctreeLimiter'
+    
+    m_MaximumLevel: bpy.props.IntProperty( name='MaximumLevel', default=5 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_MaximumLevel',]
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKHyperOctreeLimiter )        
+TYPENAMES.append('VTKHyperOctreeLimiterType' )
+
+#--------------------------------------------------------------
+class VTKHyperOctreeSurfaceFilter(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeSurfaceFilterType'
+    bl_label  = 'vtkHyperOctreeSurfaceFilter'
+    
+    m_Merging           : bpy.props.BoolProperty( name='Merging',            default=True )
+    m_PassThroughCellIds: bpy.props.BoolProperty( name='PassThroughCellIds', default=True )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=2, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_Merging','m_PassThroughCellIds',]
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKHyperOctreeSurfaceFilter )        
+TYPENAMES.append('VTKHyperOctreeSurfaceFilterType' )
+
+#--------------------------------------------------------------
+class VTKHyperOctreeToUniformGridFilter(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeToUniformGridFilterType'
+    bl_label  = 'vtkHyperOctreeToUniformGridFilter'
+    
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return []
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKHyperOctreeToUniformGridFilter )        
+TYPENAMES.append('VTKHyperOctreeToUniformGridFilterType' )
+
+#--------------------------------------------------------------
 class VTKHyperStreamline(Node, BVTK_Node):
 
     bl_idname = 'VTKHyperStreamlineType'
@@ -2909,13 +3039,13 @@ class VTKImageAnisotropicDiffusion2D(Node, BVTK_Node):
     
     m_Corners                   : bpy.props.BoolProperty     ( name='Corners',                    default=True )
     m_Edges                     : bpy.props.BoolProperty     ( name='Edges',                      default=True )
-    m_EnableSMP                 : bpy.props.BoolProperty     ( name='EnableSMP',                  default=False )
+    m_EnableSMP                 : bpy.props.BoolProperty     ( name='EnableSMP',                  default=True )
     m_Faces                     : bpy.props.BoolProperty     ( name='Faces',                      default=True )
-    m_GlobalDefaultEnableSMP    : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',     default=False )
+    m_GlobalDefaultEnableSMP    : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',     default=True )
     m_GradientMagnitudeThreshold: bpy.props.BoolProperty     ( name='GradientMagnitudeThreshold', default=True )
     m_DesiredBytesPerPiece      : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',       default=65536 )
     m_NumberOfIterations        : bpy.props.IntProperty      ( name='NumberOfIterations',         default=4 )
-    m_NumberOfThreads           : bpy.props.IntProperty      ( name='NumberOfThreads',            default=4 )
+    m_NumberOfThreads           : bpy.props.IntProperty      ( name='NumberOfThreads',            default=12 )
     m_DiffusionFactor           : bpy.props.FloatProperty    ( name='DiffusionFactor',            default=1.0 )
     m_DiffusionThreshold        : bpy.props.FloatProperty    ( name='DiffusionThreshold',         default=5.0 )
     e_SplitMode                 : bpy.props.EnumProperty     ( name='SplitMode',                  default="Slab", items=e_SplitMode_items )
@@ -2940,13 +3070,13 @@ class VTKImageAnisotropicDiffusion3D(Node, BVTK_Node):
     
     m_Corners                   : bpy.props.BoolProperty     ( name='Corners',                    default=True )
     m_Edges                     : bpy.props.BoolProperty     ( name='Edges',                      default=True )
-    m_EnableSMP                 : bpy.props.BoolProperty     ( name='EnableSMP',                  default=False )
+    m_EnableSMP                 : bpy.props.BoolProperty     ( name='EnableSMP',                  default=True )
     m_Faces                     : bpy.props.BoolProperty     ( name='Faces',                      default=True )
-    m_GlobalDefaultEnableSMP    : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',     default=False )
+    m_GlobalDefaultEnableSMP    : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',     default=True )
     m_GradientMagnitudeThreshold: bpy.props.BoolProperty     ( name='GradientMagnitudeThreshold', default=True )
     m_DesiredBytesPerPiece      : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',       default=65536 )
     m_NumberOfIterations        : bpy.props.IntProperty      ( name='NumberOfIterations',         default=4 )
-    m_NumberOfThreads           : bpy.props.IntProperty      ( name='NumberOfThreads',            default=4 )
+    m_NumberOfThreads           : bpy.props.IntProperty      ( name='NumberOfThreads',            default=12 )
     m_DiffusionFactor           : bpy.props.FloatProperty    ( name='DiffusionFactor',            default=1.0 )
     m_DiffusionThreshold        : bpy.props.FloatProperty    ( name='DiffusionThreshold',         default=5.0 )
     e_SplitMode                 : bpy.props.EnumProperty     ( name='SplitMode',                  default="Slab", items=e_SplitMode_items )
@@ -2969,12 +3099,12 @@ class VTKImageAppend(Node, BVTK_Node):
     bl_label  = 'vtkImageAppend'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_PreserveExtents       : bpy.props.BoolProperty     ( name='PreserveExtents',        default=True )
     m_AppendAxis            : bpy.props.IntProperty      ( name='AppendAxis',             default=0 )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -2995,10 +3125,10 @@ class VTKImageAppendComponents(Node, BVTK_Node):
     bl_label  = 'vtkImageAppendComponents'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3022,10 +3152,10 @@ class VTKImageBSplineCoefficients(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
     m_Bypass                : bpy.props.BoolProperty     ( name='Bypass',                 default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_SplineDegree          : bpy.props.IntProperty      ( name='SplineDegree',           default=3 )
     e_BorderMode            : bpy.props.EnumProperty     ( name='BorderMode',             default="Clamp", items=e_BorderMode_items )
     e_OutputScalarType      : bpy.props.EnumProperty     ( name='OutputScalarType',       default="Float", items=e_OutputScalarType_items )
@@ -3049,10 +3179,10 @@ class VTKImageButterworthHighPass(Node, BVTK_Node):
     bl_label  = 'vtkImageButterworthHighPass'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
     m_Order                 : bpy.props.IntProperty        ( name='Order',                  default=1 )
     m_XCutOff               : bpy.props.FloatProperty      ( name='XCutOff',                default=1e+30 )
     m_YCutOff               : bpy.props.FloatProperty      ( name='YCutOff',                default=1e+30 )
@@ -3078,10 +3208,10 @@ class VTKImageButterworthLowPass(Node, BVTK_Node):
     bl_label  = 'vtkImageButterworthLowPass'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
     m_Order                 : bpy.props.IntProperty        ( name='Order',                  default=1 )
     m_XCutOff               : bpy.props.FloatProperty      ( name='XCutOff',                default=1e+30 )
     m_YCutOff               : bpy.props.FloatProperty      ( name='YCutOff',                default=1e+30 )
@@ -3127,10 +3257,10 @@ class VTKImageCast(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
     m_ClampOverflow         : bpy.props.BoolProperty     ( name='ClampOverflow',          default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_OutputScalarType      : bpy.props.EnumProperty     ( name='OutputScalarType',       default="Float", items=e_OutputScalarType_items )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3152,11 +3282,11 @@ class VTKImageCityBlockDistance(Node, BVTK_Node):
     bl_label  = 'vtkImageCityBlockDistance'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=3 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3195,10 +3325,10 @@ class VTKImageConstantPad(Node, BVTK_Node):
     bl_label  = 'vtkImageConstantPad'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP                     : bpy.props.BoolProperty     ( name='EnableSMP',                      default=False )
-    m_GlobalDefaultEnableSMP        : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',         default=False )
+    m_EnableSMP                     : bpy.props.BoolProperty     ( name='EnableSMP',                      default=True )
+    m_GlobalDefaultEnableSMP        : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',         default=True )
     m_DesiredBytesPerPiece          : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',           default=65536 )
-    m_NumberOfThreads               : bpy.props.IntProperty      ( name='NumberOfThreads',                default=4 )
+    m_NumberOfThreads               : bpy.props.IntProperty      ( name='NumberOfThreads',                default=12 )
     m_OutputNumberOfScalarComponents: bpy.props.IntProperty      ( name='OutputNumberOfScalarComponents', default=-1 )
     m_Constant                      : bpy.props.FloatProperty    ( name='Constant',                       default=0.0 )
     e_SplitMode                     : bpy.props.EnumProperty     ( name='SplitMode',                      default="Slab", items=e_SplitMode_items )
@@ -3221,10 +3351,10 @@ class VTKImageContinuousDilate3D(Node, BVTK_Node):
     bl_label  = 'vtkImageContinuousDilate3D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_KernelSize            : bpy.props.IntVectorProperty( name='KernelSize',             default=[1, 1, 1], size=3 )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3246,10 +3376,10 @@ class VTKImageContinuousErode3D(Node, BVTK_Node):
     bl_label  = 'vtkImageContinuousErode3D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_KernelSize            : bpy.props.IntVectorProperty( name='KernelSize',             default=[1, 1, 1], size=3 )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3271,10 +3401,10 @@ class VTKImageConvolve(Node, BVTK_Node):
     bl_label  = 'vtkImageConvolve'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3388,10 +3518,10 @@ class VTKImageDilateErode3D(Node, BVTK_Node):
     bl_label  = 'vtkImageDilateErode3D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_DilateValue           : bpy.props.FloatProperty    ( name='DilateValue',            default=0.0 )
     m_ErodeValue            : bpy.props.FloatProperty    ( name='ErodeValue',             default=255.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
@@ -3415,10 +3545,10 @@ class VTKImageDivergence(Node, BVTK_Node):
     bl_label  = 'vtkImageDivergence'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3441,12 +3571,12 @@ class VTKImageEuclideanDistance(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
     m_ConsiderAnisotropy    : bpy.props.BoolProperty     ( name='ConsiderAnisotropy',     default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_Initialize            : bpy.props.BoolProperty     ( name='Initialize',             default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=3 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_MaximumDistance       : bpy.props.FloatProperty    ( name='MaximumDistance',        default=2147483647.0 )
     e_Algorithm             : bpy.props.EnumProperty     ( name='Algorithm',              default="Saito", items=e_Algorithm_items )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
@@ -3469,10 +3599,10 @@ class VTKImageEuclideanToPolar(Node, BVTK_Node):
     bl_label  = 'vtkImageEuclideanToPolar'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_ThetaMaximum          : bpy.props.FloatProperty    ( name='ThetaMaximum',           default=255.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3494,10 +3624,10 @@ class VTKImageExtractComponents(Node, BVTK_Node):
     bl_label  = 'vtkImageExtractComponents'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3518,11 +3648,11 @@ class VTKImageFFT(Node, BVTK_Node):
     bl_label  = 'vtkImageFFT'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=3 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3543,11 +3673,11 @@ class VTKImageFourierCenter(Node, BVTK_Node):
     bl_label  = 'vtkImageFourierCenter'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=3 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3568,11 +3698,11 @@ class VTKImageGaussianSmooth(Node, BVTK_Node):
     bl_label  = 'vtkImageGaussianSmooth'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty        ( name='Dimensionality',         default=3 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty       ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty  ( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     m_RadiusFactors         : bpy.props.FloatVectorProperty( name='RadiusFactors',          default=[1.5, 1.5, 1.5], size=3 )
@@ -3595,12 +3725,12 @@ class VTKImageGradient(Node, BVTK_Node):
     bl_label  = 'vtkImageGradient'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_HandleBoundaries      : bpy.props.BoolProperty     ( name='HandleBoundaries',       default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=2 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3621,12 +3751,12 @@ class VTKImageGradientMagnitude(Node, BVTK_Node):
     bl_label  = 'vtkImageGradientMagnitude'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_HandleBoundaries      : bpy.props.BoolProperty     ( name='HandleBoundaries',       default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=2 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3647,10 +3777,10 @@ class VTKImageHSIToRGB(Node, BVTK_Node):
     bl_label  = 'vtkImageHSIToRGB'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Maximum               : bpy.props.FloatProperty    ( name='Maximum',                default=255.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3672,10 +3802,10 @@ class VTKImageHSVToRGB(Node, BVTK_Node):
     bl_label  = 'vtkImageHSVToRGB'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Maximum               : bpy.props.FloatProperty    ( name='Maximum',                default=255.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3697,10 +3827,10 @@ class VTKImageHybridMedian2D(Node, BVTK_Node):
     bl_label  = 'vtkImageHybridMedian2D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3721,10 +3851,10 @@ class VTKImageIdealHighPass(Node, BVTK_Node):
     bl_label  = 'vtkImageIdealHighPass'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
     m_XCutOff               : bpy.props.FloatProperty      ( name='XCutOff',                default=1e+30 )
     m_YCutOff               : bpy.props.FloatProperty      ( name='YCutOff',                default=1e+30 )
     m_ZCutOff               : bpy.props.FloatProperty      ( name='ZCutOff',                default=1e+30 )
@@ -3749,10 +3879,10 @@ class VTKImageIdealLowPass(Node, BVTK_Node):
     bl_label  = 'vtkImageIdealLowPass'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
     m_XCutOff               : bpy.props.FloatProperty      ( name='XCutOff',                default=1e+30 )
     m_YCutOff               : bpy.props.FloatProperty      ( name='YCutOff',                default=1e+30 )
     m_ZCutOff               : bpy.props.FloatProperty      ( name='ZCutOff',                default=1e+30 )
@@ -3798,11 +3928,11 @@ class VTKImageLaplacian(Node, BVTK_Node):
     bl_label  = 'vtkImageLaplacian'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=2 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3823,10 +3953,10 @@ class VTKImageLogarithmicScale(Node, BVTK_Node):
     bl_label  = 'vtkImageLogarithmicScale'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Constant              : bpy.props.FloatProperty    ( name='Constant',               default=10.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3848,10 +3978,10 @@ class VTKImageLuminance(Node, BVTK_Node):
     bl_label  = 'vtkImageLuminance'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3872,11 +4002,11 @@ class VTKImageMagnify(Node, BVTK_Node):
     bl_label  = 'vtkImageMagnify'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_Interpolate           : bpy.props.BoolProperty     ( name='Interpolate',            default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MagnificationFactors  : bpy.props.IntVectorProperty( name='MagnificationFactors',   default=[1, 1, 1], size=3 )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3898,10 +4028,10 @@ class VTKImageMagnitude(Node, BVTK_Node):
     bl_label  = 'vtkImageMagnitude'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -3923,12 +4053,12 @@ class VTKImageMapToColors(Node, BVTK_Node):
     e_OutputFormat_items=[ (x,x,x) for x in ['Luminance', 'LuminanceAlpha', 'RGB', 'RGBA']]
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_PassAlphaToOutput     : bpy.props.BoolProperty     ( name='PassAlphaToOutput',      default=True )
     m_ActiveComponent       : bpy.props.IntProperty      ( name='ActiveComponent',        default=0 )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_OutputFormat          : bpy.props.EnumProperty     ( name='OutputFormat',           default="RGBA", items=e_OutputFormat_items )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3952,12 +4082,12 @@ class VTKImageMapToRGBA(Node, BVTK_Node):
     e_OutputFormat_items=[ (x,x,x) for x in ['Luminance', 'LuminanceAlpha', 'RGB', 'RGBA']]
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_PassAlphaToOutput     : bpy.props.BoolProperty     ( name='PassAlphaToOutput',      default=True )
     m_ActiveComponent       : bpy.props.IntProperty      ( name='ActiveComponent',        default=0 )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_OutputFormat          : bpy.props.EnumProperty     ( name='OutputFormat',           default="RGBA", items=e_OutputFormat_items )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -3981,12 +4111,12 @@ class VTKImageMapToWindowLevelColors(Node, BVTK_Node):
     e_OutputFormat_items=[ (x,x,x) for x in ['Luminance', 'LuminanceAlpha', 'RGB', 'RGBA']]
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_PassAlphaToOutput     : bpy.props.BoolProperty     ( name='PassAlphaToOutput',      default=True )
     m_ActiveComponent       : bpy.props.IntProperty      ( name='ActiveComponent',        default=0 )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Level                 : bpy.props.FloatProperty    ( name='Level',                  default=127.5 )
     m_Window                : bpy.props.FloatProperty    ( name='Window',                 default=255.0 )
     e_OutputFormat          : bpy.props.EnumProperty     ( name='OutputFormat',           default="RGBA", items=e_OutputFormat_items )
@@ -4034,10 +4164,10 @@ class VTKImageMaskBits(Node, BVTK_Node):
     e_Operation_items=[ (x,x,x) for x in ['And', 'Or', 'Xor', 'Nand', 'Nor']]
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_Operation             : bpy.props.EnumProperty     ( name='Operation',              default="And", items=e_Operation_items )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_Masks                 : bpy.props.IntVectorProperty( name='Masks',                  default=[1000000000, 1000000000, 1000000000, 1000000000], size=4 )
@@ -4060,10 +4190,10 @@ class VTKImageMedian3D(Node, BVTK_Node):
     bl_label  = 'vtkImageMedian3D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_KernelSize            : bpy.props.IntVectorProperty( name='KernelSize',             default=[1, 1, 1], size=3 )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -4085,10 +4215,10 @@ class VTKImageMirrorPad(Node, BVTK_Node):
     bl_label  = 'vtkImageMirrorPad'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP                     : bpy.props.BoolProperty     ( name='EnableSMP',                      default=False )
-    m_GlobalDefaultEnableSMP        : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',         default=False )
+    m_EnableSMP                     : bpy.props.BoolProperty     ( name='EnableSMP',                      default=True )
+    m_GlobalDefaultEnableSMP        : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',         default=True )
     m_DesiredBytesPerPiece          : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',           default=65536 )
-    m_NumberOfThreads               : bpy.props.IntProperty      ( name='NumberOfThreads',                default=4 )
+    m_NumberOfThreads               : bpy.props.IntProperty      ( name='NumberOfThreads',                default=12 )
     m_OutputNumberOfScalarComponents: bpy.props.IntProperty      ( name='OutputNumberOfScalarComponents', default=-1 )
     e_SplitMode                     : bpy.props.EnumProperty     ( name='SplitMode',                      default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize              : bpy.props.IntVectorProperty( name='MinimumPieceSize',               default=[16, 1, 1], size=3 )
@@ -4110,10 +4240,10 @@ class VTKImageNormalize(Node, BVTK_Node):
     bl_label  = 'vtkImageNormalize'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -4153,10 +4283,10 @@ class VTKImagePadFilter(Node, BVTK_Node):
     bl_label  = 'vtkImagePadFilter'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP                     : bpy.props.BoolProperty     ( name='EnableSMP',                      default=False )
-    m_GlobalDefaultEnableSMP        : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',         default=False )
+    m_EnableSMP                     : bpy.props.BoolProperty     ( name='EnableSMP',                      default=True )
+    m_GlobalDefaultEnableSMP        : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',         default=True )
     m_DesiredBytesPerPiece          : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',           default=65536 )
-    m_NumberOfThreads               : bpy.props.IntProperty      ( name='NumberOfThreads',                default=4 )
+    m_NumberOfThreads               : bpy.props.IntProperty      ( name='NumberOfThreads',                default=12 )
     m_OutputNumberOfScalarComponents: bpy.props.IntProperty      ( name='OutputNumberOfScalarComponents', default=-1 )
     e_SplitMode                     : bpy.props.EnumProperty     ( name='SplitMode',                      default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize              : bpy.props.IntVectorProperty( name='MinimumPieceSize',               default=[16, 1, 1], size=3 )
@@ -4201,11 +4331,11 @@ class VTKImageRFFT(Node, BVTK_Node):
     bl_label  = 'vtkImageRFFT'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=3 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -4226,10 +4356,10 @@ class VTKImageRGBToHSI(Node, BVTK_Node):
     bl_label  = 'vtkImageRGBToHSI'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Maximum               : bpy.props.FloatProperty    ( name='Maximum',                default=255.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -4251,10 +4381,10 @@ class VTKImageRGBToHSV(Node, BVTK_Node):
     bl_label  = 'vtkImageRGBToHSV'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Maximum               : bpy.props.FloatProperty    ( name='Maximum',                default=255.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -4276,10 +4406,10 @@ class VTKImageRGBToYIQ(Node, BVTK_Node):
     bl_label  = 'vtkImageRGBToYIQ'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Maximum               : bpy.props.FloatProperty    ( name='Maximum',                default=255.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -4301,10 +4431,10 @@ class VTKImageRange3D(Node, BVTK_Node):
     bl_label  = 'vtkImageRange3D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_KernelSize            : bpy.props.IntVectorProperty( name='KernelSize',             default=[1, 1, 1], size=3 )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -4329,11 +4459,11 @@ class VTKImageResize(Node, BVTK_Node):
     
     m_Border                : bpy.props.BoolProperty       ( name='Border',                 default=True )
     m_Cropping              : bpy.props.BoolProperty       ( name='Cropping',               default=True )
-    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty       ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=True )
     m_Interpolate           : bpy.props.BoolProperty       ( name='Interpolate',            default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',   default=0 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
     e_ResizeMethod          : bpy.props.EnumProperty       ( name='ResizeMethod',           default="OutputDimensions", items=e_ResizeMethod_items )
     e_SplitMode             : bpy.props.EnumProperty       ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty  ( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -4379,11 +4509,11 @@ class VTKImageSeparableConvolution(Node, BVTK_Node):
     bl_label  = 'vtkImageSeparableConvolution'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=3 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -4406,10 +4536,10 @@ class VTKImageShiftScale(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
     m_ClampOverflow         : bpy.props.BoolProperty     ( name='ClampOverflow',          default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Scale                 : bpy.props.FloatProperty    ( name='Scale',                  default=1.0 )
     m_Shift                 : bpy.props.FloatProperty    ( name='Shift',                  default=0.0 )
     e_OutputScalarType      : bpy.props.EnumProperty     ( name='OutputScalarType',       default="Char", items=e_OutputScalarType_items )
@@ -4434,14 +4564,14 @@ class VTKImageShrink3D(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
     m_Averaging             : bpy.props.BoolProperty     ( name='Averaging',              default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_Maximum               : bpy.props.BoolProperty     ( name='Maximum',                default=True )
     m_Mean                  : bpy.props.BoolProperty     ( name='Mean',                   default=True )
     m_Median                : bpy.props.BoolProperty     ( name='Median',                 default=True )
     m_Minimum               : bpy.props.BoolProperty     ( name='Minimum',                default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     m_Shift                 : bpy.props.IntVectorProperty( name='Shift',                  default=[0, 0, 0], size=3 )
@@ -4464,12 +4594,12 @@ class VTKImageSkeleton2D(Node, BVTK_Node):
     bl_label  = 'vtkImageSkeleton2D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_Prune                 : bpy.props.BoolProperty     ( name='Prune',                  default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_NumberOfIterations    : bpy.props.IntProperty      ( name='NumberOfIterations',     default=1 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -4492,12 +4622,12 @@ class VTKImageSlab(Node, BVTK_Node):
     e_Orientation_items=[ (x,x,x) for x in ['X', 'Y', 'Z']]
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_MultiSliceOutput      : bpy.props.BoolProperty     ( name='MultiSliceOutput',       default=True )
     m_TrapezoidIntegration  : bpy.props.BoolProperty     ( name='TrapezoidIntegration',   default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_Operation             : bpy.props.EnumProperty     ( name='Operation',              default="Mean", items=e_Operation_items )
     e_Orientation           : bpy.props.EnumProperty     ( name='Orientation',            default="Z", items=e_Orientation_items )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
@@ -4521,10 +4651,10 @@ class VTKImageSobel2D(Node, BVTK_Node):
     bl_label  = 'vtkImageSobel2D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -4545,10 +4675,10 @@ class VTKImageSobel3D(Node, BVTK_Node):
     bl_label  = 'vtkImageSobel3D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -4569,10 +4699,10 @@ class VTKImageSpatialAlgorithm(Node, BVTK_Node):
     bl_label  = 'vtkImageSpatialAlgorithm'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -4652,12 +4782,12 @@ class VTKImageThreshold(Node, BVTK_Node):
     e_OutputScalarType_items=[ (x,x,x) for x in ['Char', 'UnsignedChar', 'Short', 'UnsignedShort', 'Int', 'UnsignedInt', 'Long', 'UnsignedLong', 'Float', 'Double', 'SignedChar']]
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_ReplaceIn             : bpy.props.BoolProperty     ( name='ReplaceIn',              default=True )
     m_ReplaceOut            : bpy.props.BoolProperty     ( name='ReplaceOut',             default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_InValue               : bpy.props.FloatProperty    ( name='InValue',                default=0.0 )
     m_OutValue              : bpy.props.FloatProperty    ( name='OutValue',               default=0.0 )
     e_OutputScalarType      : bpy.props.EnumProperty     ( name='OutputScalarType',       default="Char", items=e_OutputScalarType_items )
@@ -4782,10 +4912,10 @@ class VTKImageVariance3D(Node, BVTK_Node):
     bl_label  = 'vtkImageVariance3D'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_KernelSize            : bpy.props.IntVectorProperty( name='KernelSize',             default=[1, 1, 1], size=3 )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -4807,11 +4937,11 @@ class VTKImageWeightedSum(Node, BVTK_Node):
     bl_label  = 'vtkImageWeightedSum'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_NormalizeByWeight     : bpy.props.BoolProperty     ( name='NormalizeByWeight',      default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -4832,10 +4962,10 @@ class VTKImageWrapPad(Node, BVTK_Node):
     bl_label  = 'vtkImageWrapPad'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP                     : bpy.props.BoolProperty     ( name='EnableSMP',                      default=False )
-    m_GlobalDefaultEnableSMP        : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',         default=False )
+    m_EnableSMP                     : bpy.props.BoolProperty     ( name='EnableSMP',                      default=True )
+    m_GlobalDefaultEnableSMP        : bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP',         default=True )
     m_DesiredBytesPerPiece          : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',           default=65536 )
-    m_NumberOfThreads               : bpy.props.IntProperty      ( name='NumberOfThreads',                default=4 )
+    m_NumberOfThreads               : bpy.props.IntProperty      ( name='NumberOfThreads',                default=12 )
     m_OutputNumberOfScalarComponents: bpy.props.IntProperty      ( name='OutputNumberOfScalarComponents', default=-1 )
     e_SplitMode                     : bpy.props.EnumProperty     ( name='SplitMode',                      default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize              : bpy.props.IntVectorProperty( name='MinimumPieceSize',               default=[16, 1, 1], size=3 )
@@ -4857,10 +4987,10 @@ class VTKImageYIQToRGB(Node, BVTK_Node):
     bl_label  = 'vtkImageYIQToRGB'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_Maximum               : bpy.props.FloatProperty    ( name='Maximum',                default=255.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -4887,7 +5017,7 @@ class VTKImplicitModeller(Node, BVTK_Node):
     m_Capping               : bpy.props.BoolProperty       ( name='Capping',                default=True )
     m_ScaleToMaximumDistance: bpy.props.BoolProperty       ( name='ScaleToMaximumDistance', default=True )
     m_LocatorMaxLevel       : bpy.props.IntProperty        ( name='LocatorMaxLevel',        default=5 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
     m_AdjustDistance        : bpy.props.FloatProperty      ( name='AdjustDistance',         default=0.0125 )
     m_CapValue              : bpy.props.FloatProperty      ( name='CapValue',               default=1e+30 )
     m_MaximumDistance       : bpy.props.FloatProperty      ( name='MaximumDistance',        default=0.1 )
@@ -7113,6 +7243,46 @@ add_class( VTKSMPContourGrid )
 TYPENAMES.append('VTKSMPContourGridType' )
 
 #--------------------------------------------------------------
+class VTKSMPContourGridManyPieces(Node, BVTK_Node):
+
+    bl_idname = 'VTKSMPContourGridManyPiecesType'
+    bl_label  = 'vtkSMPContourGridManyPieces'
+    
+    m_ComputeGradients : bpy.props.BoolProperty( name='ComputeGradients',  default=True )
+    m_ComputeNormals   : bpy.props.BoolProperty( name='ComputeNormals',    default=True )
+    m_ComputeScalars   : bpy.props.BoolProperty( name='ComputeScalars',    default=True )
+    m_GenerateTriangles: bpy.props.BoolProperty( name='GenerateTriangles', default=True )
+    m_NumberOfContours : bpy.props.IntProperty ( name='NumberOfContours',  default=1 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=5, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_ComputeGradients','m_ComputeNormals','m_ComputeScalars','m_GenerateTriangles','m_NumberOfContours',]
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKSMPContourGridManyPieces )        
+TYPENAMES.append('VTKSMPContourGridManyPiecesType' )
+
+#--------------------------------------------------------------
+class VTKSMPWarpVector(Node, BVTK_Node):
+
+    bl_idname = 'VTKSMPWarpVectorType'
+    bl_label  = 'vtkSMPWarpVector'
+    
+    m_ScaleFactor: bpy.props.FloatProperty( name='ScaleFactor', default=1.0 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_ScaleFactor',]
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKSMPWarpVector )        
+TYPENAMES.append('VTKSMPWarpVectorType' )
+
+#--------------------------------------------------------------
 class VTKSampleImplicitFunctionFilter(Node, BVTK_Node):
 
     bl_idname = 'VTKSampleImplicitFunctionFilterType'
@@ -8579,12 +8749,12 @@ class VTKVolumeRayCastSpaceLeapingImageFilter(Node, BVTK_Node):
     
     m_ComputeGradientOpacity    : bpy.props.BoolProperty       ( name='ComputeGradientOpacity',     default=True )
     m_ComputeMinMax             : bpy.props.BoolProperty       ( name='ComputeMinMax',              default=True )
-    m_EnableSMP                 : bpy.props.BoolProperty       ( name='EnableSMP',                  default=False )
-    m_GlobalDefaultEnableSMP    : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',     default=False )
+    m_EnableSMP                 : bpy.props.BoolProperty       ( name='EnableSMP',                  default=True )
+    m_GlobalDefaultEnableSMP    : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',     default=True )
     m_UpdateGradientOpacityFlags: bpy.props.BoolProperty       ( name='UpdateGradientOpacityFlags', default=True )
     m_DesiredBytesPerPiece      : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',       default=65536 )
     m_IndependentComponents     : bpy.props.IntProperty        ( name='IndependentComponents',      default=1 )
-    m_NumberOfThreads           : bpy.props.IntProperty        ( name='NumberOfThreads',            default=4 )
+    m_NumberOfThreads           : bpy.props.IntProperty        ( name='NumberOfThreads',            default=12 )
     e_SplitMode                 : bpy.props.EnumProperty       ( name='SplitMode',                  default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize          : bpy.props.IntVectorProperty  ( name='MinimumPieceSize',           default=[16, 1, 1], size=3 )
     m_TableSize                 : bpy.props.IntVectorProperty  ( name='TableSize',                  default=[0, 0, 0, 0], size=4 )
