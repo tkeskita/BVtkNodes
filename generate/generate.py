@@ -106,7 +106,7 @@ def get_classes(group):
     return c_list
 
 
-node_template = '''from .core import *    
+node_template = '''from ..core import *    
 TYPENAMES = []
 {% for C in CLASSES %}
 #--------------------------------------------------------------
@@ -231,7 +231,7 @@ def generate(group):
     # Render the jinja2 template and write to file
     from vtk import vtkVersion
     text = "# Generated definitions for VTK class group: " + group + \
-           "\n# VTK version: " + \
+           "\n# VTK Version: " + \
            vtkVersion().GetVTKVersion() + "\n\n" + \
            template.render(DIC)
     f = open(filenames[group], 'w')
@@ -266,8 +266,9 @@ filenames = { 'Source':         'gen_VTKSources.py',
               'Integrator':     'gen_VTKIntegrator.py',
 }
 
+call_dir = os.path.dirname(__file__)
 # Create in subdirectory
-filenames = {key: 'generated_nodes/' + val for key, val in filenames.items()}
+filenames = {key: (call_dir if len(call_dir) > 0 else '.') + '/../generated_nodes/' + val for key, val in filenames.items()}
 
 # Call generation routine for each class
 generate('Source')

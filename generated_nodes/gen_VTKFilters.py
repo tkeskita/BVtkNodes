@@ -1,7 +1,7 @@
 # Generated definitions for VTK class group: Filter
-# VTK version: 8.1.2
+# VTK Version: 8.1.2
 
-from .core import *    
+from ..core import *    
 TYPENAMES = []
 
 #--------------------------------------------------------------
@@ -604,7 +604,7 @@ class VTKImageFlip(Node, BVTK_Node):
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
     m_FilteredAxes            : bpy.props.IntProperty        ( name='FilteredAxes',             default=0 )
     m_FilteredAxis            : bpy.props.IntProperty        ( name='FilteredAxis',             default=0 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=8 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -652,7 +652,7 @@ class VTKImagePermute(Node, BVTK_Node):
     m_TransformInputSampling  : bpy.props.BoolProperty       ( name='TransformInputSampling',   default=True )
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=8 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -702,7 +702,7 @@ class VTKImageResample(Node, BVTK_Node):
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
     m_Dimensionality          : bpy.props.IntProperty        ( name='Dimensionality',           default=3 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=8 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -751,7 +751,7 @@ class VTKImageReslice(Node, BVTK_Node):
     m_TransformInputSampling  : bpy.props.BoolProperty       ( name='TransformInputSampling',   default=True )
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=8 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -801,7 +801,7 @@ class VTKImageResliceToColors(Node, BVTK_Node):
     m_TransformInputSampling  : bpy.props.BoolProperty       ( name='TransformInputSampling',   default=True )
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=8 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=3 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -851,7 +851,7 @@ class VTKImageSlabReslice(Node, BVTK_Node):
     m_TransformInputSampling  : bpy.props.BoolProperty       ( name='TransformInputSampling',   default=True )
     m_Wrap                    : bpy.props.BoolProperty       ( name='Wrap',                     default=True )
     m_DesiredBytesPerPiece    : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',     default=65536 )
-    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=12 )
+    m_NumberOfThreads         : bpy.props.IntProperty        ( name='NumberOfThreads',          default=8 )
     m_OutputDimensionality    : bpy.props.IntProperty        ( name='OutputDimensionality',     default=2 )
     m_OutputScalarType        : bpy.props.IntProperty        ( name='OutputScalarType',         default=-1 )
     m_SlabNumberOfSlices      : bpy.props.IntProperty        ( name='SlabNumberOfSlices',       default=1 )
@@ -892,7 +892,7 @@ class VTKImageStencil(Node, BVTK_Node):
     m_GlobalDefaultEnableSMP: bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP', default=True )
     m_ReverseStencil        : bpy.props.BoolProperty       ( name='ReverseStencil',         default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=12 )
+    m_NumberOfThreads       : bpy.props.IntProperty        ( name='NumberOfThreads',        default=8 )
     m_BackgroundValue       : bpy.props.FloatProperty      ( name='BackgroundValue',        default=1.0 )
     e_SplitMode             : bpy.props.EnumProperty       ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty  ( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )

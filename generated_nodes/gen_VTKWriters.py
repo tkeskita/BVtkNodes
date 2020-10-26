@@ -1,8 +1,30 @@
 # Generated definitions for VTK class group: Writer
-# VTK version: 8.1.2
+# VTK Version: 8.1.2
 
-from .core import *    
+from ..core import *    
 TYPENAMES = []
+
+#--------------------------------------------------------------
+class VTKAVIWriter(Node, BVTK_Node):
+
+    bl_idname = 'VTKAVIWriterType'
+    bl_label  = 'vtkAVIWriter'
+    
+    m_PromptCompressionOptions: bpy.props.BoolProperty  ( name='PromptCompressionOptions', default=True )
+    m_CompressorFourCC        : bpy.props.StringProperty( name='CompressorFourCC',         default="MSVC" )
+    m_FileName                : bpy.props.StringProperty( name='FileName',                 default="", subtype='FILE_PATH' )
+    m_Quality                 : bpy.props.IntProperty   ( name='Quality',                  default=10000 )
+    m_Rate                    : bpy.props.IntProperty   ( name='Rate',                     default=1000 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=5, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_PromptCompressionOptions','m_CompressorFourCC','m_FileName','m_Quality','m_Rate',]
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+    
+add_class( VTKAVIWriter )        
+TYPENAMES.append('VTKAVIWriterType' )
 
 #--------------------------------------------------------------
 class VTKArrayDataWriter(Node, BVTK_Node):

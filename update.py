@@ -26,9 +26,12 @@ def UpdateObj(node, vtkobj):
         node.apply_properties(vtkobj)
         node.apply_inputs(vtkobj)
     except AttributeError as err:
-        err_msg = "Encountered an attribute error when trying to apply vtk properties.\n"
-                + "This may point to a VTK version mismatch between generated and currently used VTK."
+        err_msg = ("Encountered an attribute error when trying to apply vtk properties.\n"
+                + "This may point to a VTK version mismatch between generated and currently used VTK.")
         raise BVTKException(err_msg, err)
+    except Exception as ex:
+        err_msg = "Unknown error..."
+        raise BVTKException(err_msg, ex)
     
     if hasattr(vtkobj, "Update"):
         vtkobj.Update()

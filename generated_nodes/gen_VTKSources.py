@@ -1,7 +1,7 @@
 # Generated definitions for VTK class group: Source
-# VTK version: 8.1.2
+# VTK Version: 8.1.2
 
-from .core import *    
+from ..core import *    
 TYPENAMES = []
 
 #--------------------------------------------------------------
@@ -1547,6 +1547,37 @@ class VTKVideoSource(Node, BVTK_Node):
     
 add_class( VTKVideoSource )        
 TYPENAMES.append('VTKVideoSourceType' )
+
+#--------------------------------------------------------------
+class VTKWin32VideoSource(Node, BVTK_Node):
+
+    bl_idname = 'VTKWin32VideoSourceType'
+    bl_label  = 'vtkWin32VideoSource'
+    e_OutputFormat_items=[ (x,x,x) for x in ['Luminance', 'RGB', 'RGBA']]
+    
+    m_AutoAdvance         : bpy.props.BoolProperty       ( name='AutoAdvance',          default=True )
+    m_Preview             : bpy.props.BoolProperty       ( name='Preview',              default=True )
+    m_FrameBufferSize     : bpy.props.IntProperty        ( name='FrameBufferSize',      default=1 )
+    m_FrameCount          : bpy.props.IntProperty        ( name='FrameCount',           default=0 )
+    m_NumberOfOutputFrames: bpy.props.IntProperty        ( name='NumberOfOutputFrames', default=1 )
+    m_FrameRate           : bpy.props.FloatProperty      ( name='FrameRate',            default=30.0 )
+    m_Opacity             : bpy.props.FloatProperty      ( name='Opacity',              default=1.0 )
+    m_StartTimeStamp      : bpy.props.FloatProperty      ( name='StartTimeStamp',       default=0.0 )
+    e_OutputFormat        : bpy.props.EnumProperty       ( name='OutputFormat',         default="RGB", items=e_OutputFormat_items )
+    m_FrameSize           : bpy.props.IntVectorProperty  ( name='FrameSize',            default=[320, 240, 1], size=3 )
+    m_OutputWholeExtent   : bpy.props.IntVectorProperty  ( name='OutputWholeExtent',    default=[0, -1, 0, -1, 0, -1], size=6 )
+    m_DataOrigin          : bpy.props.FloatVectorProperty( name='DataOrigin',           default=[0.0, 0.0, 0.0], size=3 )
+    m_DataSpacing         : bpy.props.FloatVectorProperty( name='DataSpacing',          default=[1.0, 1.0, 1.0], size=3 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_AutoAdvance','m_Preview','m_FrameBufferSize','m_FrameCount','m_NumberOfOutputFrames','m_FrameRate','m_Opacity','m_StartTimeStamp','e_OutputFormat','m_FrameSize','m_OutputWholeExtent','m_DataOrigin','m_DataSpacing',]
+    def m_connections( self ):
+        return ([], ['output'], [], []) 
+    
+add_class( VTKWin32VideoSource )        
+TYPENAMES.append('VTKWin32VideoSourceType' )
 
 #--------------------------------------------------------------
 class VTKWindowToImageFilter(Node, BVTK_Node):

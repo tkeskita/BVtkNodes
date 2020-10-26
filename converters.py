@@ -3,15 +3,22 @@ from .core import l # Import logging
 from .core import *
 import bmesh
 
-#TODO: Actually include
-#from vtk_numpy_utils.loader import VTKLoader, VTKConverter
-
 try:
     import pyopenvdb
     with_pyopenvdb = True
 except ImportError:
     l.warning("Import pyopenvdb failed, BVTK To Blender Volume is unavailable.")
     with_pyopenvdb = False
+
+try:
+    import pyvista as pv
+    with_pyvista = True
+    from .custom_nodes.pynodes import pynodes
+    #pynodes.register_nodes()
+    l.info("Pyvista nodes activated")
+except ImportError as err:
+    l.warning("Import pyvista failed with:\n\'%s\'\n, Python related nodes will be unavailable." % (err.msg))
+    with_pyvista = False
 
 # -----------------------------------------------------------------------------
 # Converters from VTK to Blender
@@ -1560,7 +1567,7 @@ def create_lut(name, vrange, n_div, texture, b=0.5, h=5.5, x=5, y=0, z=0, fontsi
 
     # Add labels as texts
     for i in range(int(math.floor((max-start)/step))+1):
-        t = text(name+'_lab'+str(i), '{:.15}'.format(start+i*step))
+        t = text(name+'_lab'+str(i), '{:.15}'.format(float(start+i*step)))
         t.data.size = fontsize
         t.rotation_mode = 'XYZ'
         t.rotation_euler = (1.5707963705062866, 0.0, 0.0)
