@@ -3,7 +3,7 @@ import bpy.utils.previews
 from .core import *
 
 # -----------------------------------------------------------------------------
-# Dubug panel and node documentation panel (information about
+# Debug panel and node documentation panel (information about
 # active node's vtk object)
 # -----------------------------------------------------------------------------
 class BVTK_PT_Inspect(bpy.types.Panel):

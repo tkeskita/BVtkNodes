@@ -106,7 +106,7 @@ def get_classes(group):
     return c_list
 
 
-node_template = '''from .core import *    
+node_template = '''from ..core import *    
 TYPENAMES = []
 {% for C in CLASSES %}
 #--------------------------------------------------------------
@@ -268,6 +268,10 @@ filenames = { 'Source':         'gen_VTKSources.py',
               'ParametricFunc': 'gen_VTKParametricFunc.py',
               'Integrator':     'gen_VTKIntegrator.py',
 }
+
+call_dir = os.path.dirname(__file__)
+# Create in subdirectory
+filenames = {key: (call_dir if len(call_dir) > 0 else '.') + '/../generated_nodes/' + val for key, val in filenames.items()}
 
 # Call generation routine for each class
 generate('Source')

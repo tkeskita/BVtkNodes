@@ -119,17 +119,12 @@ else:
     from . import tree
     from . import colormap
     from . import customfilter
-    from . import info
+    from .custom_nodes.helper import info
     from . import update
     from . import converters
 
-    from . import VTKSources
-    from . import VTKReaders
-    from . import VTKWriters
-    from . import VTKFilters
+    from .custom_nodes import VTKSources, VTKReaders, VTKWriters, VTKFilters, VTKOthers
     
-    from . import VTKOthers
-
 from .core import l # Import logging
 
 if need_reloading:
@@ -140,6 +135,36 @@ else:
 l.info("Loaded VTK version: " + vtk.vtkVersion().GetVTKVersion())
 l.info("VTK base path: " + vtk.__file__)
 
+@persistent
+def compareGeneratedAndCurrentVTKVersion():
+    '''Check if the vtk version with which the files were generated is equal to the current vtk version and log a warning if not'''
+    import re
+    import os
+    from .generated_nodes import gen_VTKFilters
+
+    vtk_re = re.compile("^\# VTK version\: (\S*).*$")
+
+    gen_vtk_path = os.path.abspath(gen_VTKFilters.__file__)
+    gen_vtk_f = open(gen_vtk_path, 'r')
+    lines = gen_vtk_f.readlines()
+    vtk_version = vtk.vtkVersion().GetVTKVersion()
+    gen_vtk_version = None
+
+    # Strips the newline character
+    for line in lines:
+        matches = vtk_re.match(line)
+
+        if matches is not None:
+            gen_vtk_version = matches.group(1)
+            break
+
+    if gen_vtk_version is None:
+        l.warning("Warning: Generated VTK file did not provide a VTK version")
+
+    elif gen_vtk_version != vtk_version :
+        l.warning("Warning: Generated VTK file has version %s, but blender's VTK version is %s" % (gen_vtk_version, vtk_version))
+
+compareGeneratedAndCurrentVTKVersion()
 
 @persistent
 def on_file_loaded(scene):

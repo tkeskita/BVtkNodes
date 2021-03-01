@@ -1,7 +1,7 @@
 # Generated definitions for VTK class group: Integrator
 # VTK version: 9.0.1
 
-from .core import *    
+from ..core import *    
 TYPENAMES = []
 
 #--------------------------------------------------------------

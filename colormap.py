@@ -3,6 +3,17 @@
 # -----------------------------------------------------------------------------
 
 from .core import *
+import json
+import os
+import numpy as np
+
+current_dir = os.path.dirname(__file__)
+
+with open(current_dir + '/colormaps/colormaps_hsv.json') as json_file:
+    colormaps_hsv = json.load(json_file)
+
+with open(current_dir + '/colormaps/colormaps_rgb.json') as json_file:
+    colormaps_rgb = json.load(json_file)
 
 def get_default_texture(name):
     '''Create and return a new color ramp BLEND type brush texture'''
@@ -27,6 +38,42 @@ def get_default_texture(name):
     e.color = (221 / 255, 221 / 255, 221 / 255, 1)
     e = elements.new(0.575)
     e.color = (243 / 255, 148 / 255, 117 / 255, 1)
+    return tex
+
+def get_matplotlib_colormap(texture_name, cm_name, cm_nr_values):
+    '''Create or modify a texture map according to the colormap given name'''
+    if texture_name not in bpy.data.textures:
+        tex = bpy.data.textures.new(texture_name, 'BLEND')
+    else:
+        tex = bpy.data.textures[texture_name]
+    tex.use_color_ramp = True
+
+    # Force saving of blend texture, so that ramp is correct when
+    # blend file is loaded. TODO: Is there better way to fix this?
+    tex.use_fake_user = True
+
+    elements = tex.color_ramp.elements
+    old_len = len(elements.items())
+
+    #Fetch new colormap
+    new_colors = np.array(colormaps_rgb[cm_name]).astype(np.float32)
+    new_colors_nr = new_colors.shape[0]
+    #Positions on the x-axis of the colors
+    colors_cmap_x = np.linspace(0, 1, num=new_colors_nr)
+    colors_x = np.linspace(0, 1, num=cm_nr_values+1)[:-1]
+    real_colors_x = np.linspace(0, 1, num=cm_nr_values)
+    #Interpolate to desired length
+    new_colors_interp = np.stack([np.interp(real_colors_x, colors_cmap_x, new_colors[:, i]) for i in range(3)], axis=-1)
+    new_colors_interp_w_alpha = np.concatenate([new_colors_interp, np.ones_like(new_colors_interp[:, :1])], axis=-1)
+
+    #Delete old colors if too many
+    [elements.remove(elements[0]) for i in range(old_len - cm_nr_values)]
+
+    #Add new colors if too few
+    [elements.new(colors_x[i]) for i in range(cm_nr_values - old_len)]
+
+    elements.foreach_set('position', colors_x)
+    elements.foreach_set('color', new_colors_interp_w_alpha.reshape([-1]))
     return tex
 
 
@@ -157,8 +204,33 @@ class BVTK_Node_ColorRamp(Node, BVTK_Node):
     )
     my_texture: bpy.props.StringProperty()
 
+    def preset_name_from_ind(self, ind):
+        return self.cm_preset_items[ind][0]
+    
+    def update_colorbar_preset(self, context):
+        if self.cm_preset == 'custom':
+            return
+
+        new_texture = get_matplotlib_colormap(self.name, self.cm_preset, self.cm_nr_values)
+        self.my_texture = new_texture.name
+        #return value
+
+    def update_colorbar_nr(self, context):
+        #Custom nodes will not be modified by the automatic helper
+        if self.cm_preset == 'custom':
+            return
+
+        self.update_colorbar_preset(context)
+        #self.cm_nr_values_ = value
+        #return value
+
+    cm_preset_items = [ (x,x,x) for x in ['viridis', 'jet', 'coolwarm', 'custom']]
+    cm_preset:   bpy.props.EnumProperty   (name='Preset', default='custom', items=cm_preset_items, update=update_colorbar_preset) #, set=update_colorbar_preset)
+    cm_nr_values: bpy.props.IntProperty(name='Nr Color values', default=8, max=32, min=2, update=update_colorbar_nr) #, get=get_cm_nr_values)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=32, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
     def m_properties(self):
-        return []
+        return ['cm_preset', 'cm_nr_values']
 
     def m_connections(self):
         return ([],[],[],['lookupTable'])
@@ -184,6 +256,7 @@ class BVTK_Node_ColorRamp(Node, BVTK_Node):
         new_texture = get_default_texture(self.name)
         self.my_texture = new_texture.name
 
+
     def get_texture(self):
         if self.my_texture not in bpy.data.textures.keys():
             return None
@@ -197,6 +270,10 @@ class BVTK_Node_ColorRamp(Node, BVTK_Node):
     def draw_buttons(self, context, layout):
         if self.my_texture in bpy.data.textures.keys():
             layout.template_color_ramp(bpy.data.textures[self.my_texture], "color_ramp", expand=False)
+        row = layout.row()
+        row.prop(self, 'cm_preset')
+        row = layout.row()
+        row.prop(self, 'cm_nr_values')
 
     def apply_properties(self, vtkobj):
         pass

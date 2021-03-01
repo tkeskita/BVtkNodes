@@ -1,7 +1,7 @@
 # Generated definitions for VTK class group: ImplicitFunc
 # VTK version: 9.0.1
 
-from .core import *    
+from ..core import *    
 TYPENAMES = []
 
 #--------------------------------------------------------------
@@ -137,24 +137,6 @@ class VTKImplicitPolyDataDistance(Node, BVTK_Node):
     
 add_class( VTKImplicitPolyDataDistance )        
 TYPENAMES.append('VTKImplicitPolyDataDistanceType' )
-
-#--------------------------------------------------------------
-class VTKImplicitProjectOnPlaneDistance(Node, BVTK_Node):
-
-    bl_idname = 'VTKImplicitProjectOnPlaneDistanceType'
-    bl_label  = 'vtkImplicitProjectOnPlaneDistance'
-    
-    m_Tolerance: bpy.props.FloatProperty( name='Tolerance', default=0.01 )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_Tolerance',]
-    def m_connections( self ):
-        return ([], [], ['Norm', 'Transform'], ['self']) 
-    
-add_class( VTKImplicitProjectOnPlaneDistance )        
-TYPENAMES.append('VTKImplicitProjectOnPlaneDistanceType' )
 
 #--------------------------------------------------------------
 class VTKImplicitSelectionLoop(Node, BVTK_Node):
@@ -356,23 +338,6 @@ class VTKSphere(Node, BVTK_Node):
     
 add_class( VTKSphere )        
 TYPENAMES.append('VTKSphereType' )
-
-#--------------------------------------------------------------
-class VTKSpheres(Node, BVTK_Node):
-
-    bl_idname = 'VTKSpheresType'
-    bl_label  = 'vtkSpheres'
-    
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return []
-    def m_connections( self ):
-        return ([], [], ['Centers', 'Radii', 'Transform'], ['self']) 
-    
-add_class( VTKSpheres )        
-TYPENAMES.append('VTKSpheresType' )
 
 #--------------------------------------------------------------
 class VTKSuperquadric(Node, BVTK_Node):

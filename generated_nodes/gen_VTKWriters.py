@@ -1,7 +1,7 @@
 # Generated definitions for VTK class group: Writer
 # VTK version: 9.0.1
 
-from .core import *    
+from ..core import *    
 TYPENAMES = []
 
 #--------------------------------------------------------------
@@ -484,24 +484,6 @@ add_class( VTKJPEGWriter )
 TYPENAMES.append('VTKJPEGWriterType' )
 
 #--------------------------------------------------------------
-class VTKJSONDataSetWriter(Node, BVTK_Node):
-
-    bl_idname = 'VTKJSONDataSetWriterType'
-    bl_label  = 'vtkJSONDataSetWriter'
-    
-    m_FileName: bpy.props.StringProperty( name='FileName', default="", subtype='FILE_PATH' )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_FileName',]
-    def m_connections( self ):
-        return (['input'], [], ['Archiver'], []) 
-    
-add_class( VTKJSONDataSetWriter )        
-TYPENAMES.append('VTKJSONDataSetWriterType' )
-
-#--------------------------------------------------------------
 class VTKJSONImageWriter(Node, BVTK_Node):
 
     bl_idname = 'VTKJSONImageWriterType'
@@ -673,7 +655,7 @@ class VTKNIFTIImageWriter(Node, BVTK_Node):
     bl_label  = 'vtkNIFTIImageWriter'
     
     m_PlanarRGB         : bpy.props.BoolProperty  ( name='PlanarRGB',          default=False )
-    m_Description       : bpy.props.StringProperty( name='Description',        default="VTK9.0.1" )
+    m_Description       : bpy.props.StringProperty( name='Description',        default="VTK8.1.2" )
     m_FileName          : bpy.props.StringProperty( name='FileName',           default="", subtype='FILE_PATH' )
     m_FilePattern       : bpy.props.StringProperty( name='FilePattern',        default="%s.%d" )
     m_FilePrefix        : bpy.props.StringProperty( name='FilePrefix',         default="" )
@@ -729,24 +711,6 @@ class VTKNewickTreeWriter(Node, BVTK_Node):
     
 add_class( VTKNewickTreeWriter )        
 TYPENAMES.append('VTKNewickTreeWriterType' )
-
-#--------------------------------------------------------------
-class VTKOBJWriter(Node, BVTK_Node):
-
-    bl_idname = 'VTKOBJWriterType'
-    bl_label  = 'vtkOBJWriter'
-    
-    m_FileName: bpy.props.StringProperty( name='FileName', default="", subtype='FILE_PATH' )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_FileName',]
-    def m_connections( self ):
-        return (['input 0', 'input 1'], [], [], []) 
-    
-add_class( VTKOBJWriter )        
-TYPENAMES.append('VTKOBJWriterType' )
 
 #--------------------------------------------------------------
 class VTKOggTheoraWriter(Node, BVTK_Node):
@@ -841,7 +805,6 @@ class VTKPLYWriter(Node, BVTK_Node):
     e_TextureCoordinatesName_items=[ (x,x,x) for x in ['UV', 'TextureUV']]
     
     m_EnableAlpha           : bpy.props.BoolProperty     ( name='EnableAlpha',            default=False )
-    m_WriteToOutputString   : bpy.props.BoolProperty     ( name='WriteToOutputString',    default=False )
     m_ArrayName             : bpy.props.StringProperty   ( name='ArrayName',              default="" )
     m_FileName              : bpy.props.StringProperty   ( name='FileName',               default="", subtype='FILE_PATH' )
     m_Alpha                 : bpy.props.IntProperty      ( name='Alpha',                  default=255 )
@@ -852,10 +815,10 @@ class VTKPLYWriter(Node, BVTK_Node):
     e_TextureCoordinatesName: bpy.props.EnumProperty     ( name='TextureCoordinatesName', default="UV", items=e_TextureCoordinatesName_items )
     m_Color                 : bpy.props.IntVectorProperty( name='Color',                  default=[255, 255, 255], size=3 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=10, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EnableAlpha','m_WriteToOutputString','m_ArrayName','m_FileName','m_Alpha','m_Component','e_ColorMode','e_DataByteOrder','e_FileType','e_TextureCoordinatesName','m_Color',]
+        return ['m_EnableAlpha','m_ArrayName','m_FileName','m_Alpha','m_Component','e_ColorMode','e_DataByteOrder','e_FileType','e_TextureCoordinatesName','m_Color',]
     def m_connections( self ):
         return (['input'], [], ['LookupTable'], []) 
     
@@ -922,17 +885,16 @@ class VTKPhyloXMLTreeWriter(Node, BVTK_Node):
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_NodeNameArrayName  : bpy.props.StringProperty( name='NodeNameArrayName',   default="node name" )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     e_ByteOrder          : bpy.props.EnumProperty  ( name='ByteOrder',           default="LittleEndian", items=e_ByteOrder_items )
     e_DataMode           : bpy.props.EnumProperty  ( name='DataMode',            default="Appended", items=e_DataMode_items )
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_EdgeWeightArrayName','m_FileName','m_NodeNameArrayName','m_BlockSize','m_CompressionLevel','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_EdgeWeightArrayName','m_FileName','m_NodeNameArrayName','m_BlockSize','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1035,7 +997,7 @@ class VTKSTLWriter(Node, BVTK_Node):
     e_FileType_items=[ (x,x,x) for x in ['ASCII', 'Binary']]
     
     m_FileName: bpy.props.StringProperty( name='FileName', default="", subtype='FILE_PATH' )
-    m_Header  : bpy.props.StringProperty( name='Header',   default="Visualization Toolkit generated SLA File" )
+    m_Header  : bpy.props.StringProperty( name='Header',   default="Visualization Toolkit generated SLA File                                        " )
     e_FileType: bpy.props.EnumProperty  ( name='FileType', default="ASCII", items=e_FileType_items )
     
     b_properties: bpy.props.BoolVectorProperty(name="", size=3, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
@@ -1043,7 +1005,7 @@ class VTKSTLWriter(Node, BVTK_Node):
     def m_properties( self ):
         return ['m_FileName','m_Header','e_FileType',]
     def m_connections( self ):
-        return (['input'], [], ['BinaryHeader'], []) 
+        return (['input'], [], [], []) 
     
 add_class( VTKSTLWriter )        
 TYPENAMES.append('VTKSTLWriterType' )
@@ -1303,17 +1265,16 @@ class VTKXMLDataObjectWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     e_ByteOrder          : bpy.props.EnumProperty  ( name='ByteOrder',           default="LittleEndian", items=e_ByteOrder_items )
     e_DataMode           : bpy.props.EnumProperty  ( name='DataMode',            default="Appended", items=e_DataMode_items )
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=10, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=9, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1334,17 +1295,16 @@ class VTKXMLDataSetWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     e_ByteOrder          : bpy.props.EnumProperty  ( name='ByteOrder',           default="LittleEndian", items=e_ByteOrder_items )
     e_DataMode           : bpy.props.EnumProperty  ( name='DataMode',            default="Appended", items=e_DataMode_items )
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=10, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=9, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1365,7 +1325,6 @@ class VTKXMLHierarchicalBoxDataWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     m_WriteMetaFile      : bpy.props.IntProperty   ( name='WriteMetaFile',       default=1 )
@@ -1374,10 +1333,10 @@ class VTKXMLHierarchicalBoxDataWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1385,10 +1344,10 @@ add_class( VTKXMLHierarchicalBoxDataWriter )
 TYPENAMES.append('VTKXMLHierarchicalBoxDataWriterType' )
 
 #--------------------------------------------------------------
-class VTKXMLHyperTreeGridWriter(Node, BVTK_Node):
+class VTKXMLHyperOctreeWriter(Node, BVTK_Node):
 
-    bl_idname = 'VTKXMLHyperTreeGridWriterType'
-    bl_label  = 'vtkXMLHyperTreeGridWriter'
+    bl_idname = 'VTKXMLHyperOctreeWriterType'
+    bl_label  = 'vtkXMLHyperOctreeWriter'
     e_ByteOrder_items=[ (x,x,x) for x in ['BigEndian', 'LittleEndian']]
     e_DataMode_items=[ (x,x,x) for x in ['Ascii', 'Binary', 'Appended']]
     e_HeaderType_items=[ (x,x,x) for x in ['UInt32', 'UInt64']]
@@ -1398,22 +1357,21 @@ class VTKXMLHyperTreeGridWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     e_ByteOrder          : bpy.props.EnumProperty  ( name='ByteOrder',           default="LittleEndian", items=e_ByteOrder_items )
     e_DataMode           : bpy.props.EnumProperty  ( name='DataMode',            default="Appended", items=e_DataMode_items )
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=10, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=9, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_NumberOfTimeSteps','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
-add_class( VTKXMLHyperTreeGridWriter )        
-TYPENAMES.append('VTKXMLHyperTreeGridWriterType' )
+add_class( VTKXMLHyperOctreeWriter )        
+TYPENAMES.append('VTKXMLHyperOctreeWriterType' )
 
 #--------------------------------------------------------------
 class VTKXMLImageDataWriter(Node, BVTK_Node):
@@ -1429,7 +1387,6 @@ class VTKXMLImageDataWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty     ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty   ( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty      ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty      ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty      ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty      ( name='NumberOfPieces',      default=1 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty      ( name='NumberOfTimeSteps',   default=1 )
@@ -1440,10 +1397,10 @@ class VTKXMLImageDataWriter(Node, BVTK_Node):
     e_IdType             : bpy.props.EnumProperty     ( name='IdType',              default="Int64", items=e_IdType_items )
     m_WriteExtent        : bpy.props.IntVectorProperty( name='WriteExtent',         default=[0, -1, 0, -1, 0, -1], size=6 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=14, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType','m_WriteExtent',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType','m_WriteExtent',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1464,7 +1421,6 @@ class VTKXMLMultiBlockDataWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     m_WriteMetaFile      : bpy.props.IntProperty   ( name='WriteMetaFile',       default=1 )
@@ -1473,10 +1429,10 @@ class VTKXMLMultiBlockDataWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1499,7 +1455,6 @@ class VTKXMLPDataSetWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_EndPiece           : bpy.props.IntProperty   ( name='EndPiece',            default=0 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
@@ -1510,10 +1465,10 @@ class VTKXMLPDataSetWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=15, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1534,7 +1489,6 @@ class VTKXMLPHierarchicalBoxDataWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     m_WriteMetaFile      : bpy.props.IntProperty   ( name='WriteMetaFile',       default=1 )
@@ -1543,52 +1497,15 @@ class VTKXMLPHierarchicalBoxDataWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
 add_class( VTKXMLPHierarchicalBoxDataWriter )        
 TYPENAMES.append('VTKXMLPHierarchicalBoxDataWriterType' )
-
-#--------------------------------------------------------------
-class VTKXMLPHyperTreeGridWriter(Node, BVTK_Node):
-
-    bl_idname = 'VTKXMLPHyperTreeGridWriterType'
-    bl_label  = 'vtkXMLPHyperTreeGridWriter'
-    e_ByteOrder_items=[ (x,x,x) for x in ['BigEndian', 'LittleEndian']]
-    e_DataMode_items=[ (x,x,x) for x in ['Ascii', 'Binary', 'Appended']]
-    e_HeaderType_items=[ (x,x,x) for x in ['UInt32', 'UInt64']]
-    e_IdType_items=[ (x,x,x) for x in ['Int32', 'Int64']]
-    
-    m_EncodeAppendedData : bpy.props.BoolProperty  ( name='EncodeAppendedData',  default=True )
-    m_UseSubdirectory    : bpy.props.BoolProperty  ( name='UseSubdirectory',     default=False )
-    m_WriteSummaryFile   : bpy.props.BoolProperty  ( name='WriteSummaryFile',    default=True )
-    m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
-    m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
-    m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
-    m_EndPiece           : bpy.props.IntProperty   ( name='EndPiece',            default=0 )
-    m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
-    m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
-    m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
-    m_StartPiece         : bpy.props.IntProperty   ( name='StartPiece',          default=0 )
-    e_ByteOrder          : bpy.props.EnumProperty  ( name='ByteOrder',           default="LittleEndian", items=e_ByteOrder_items )
-    e_DataMode           : bpy.props.EnumProperty  ( name='DataMode',            default="Appended", items=e_DataMode_items )
-    e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
-    e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
-    def m_connections( self ):
-        return (['input'], [], [], []) 
-    
-add_class( VTKXMLPHyperTreeGridWriter )        
-TYPENAMES.append('VTKXMLPHyperTreeGridWriterType' )
 
 #--------------------------------------------------------------
 class VTKXMLPImageDataWriter(Node, BVTK_Node):
@@ -1606,7 +1523,6 @@ class VTKXMLPImageDataWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_EndPiece           : bpy.props.IntProperty   ( name='EndPiece',            default=0 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
@@ -1617,10 +1533,10 @@ class VTKXMLPImageDataWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=15, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1641,7 +1557,6 @@ class VTKXMLPMultiBlockDataWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
@@ -1652,10 +1567,10 @@ class VTKXMLPMultiBlockDataWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=14, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1678,7 +1593,6 @@ class VTKXMLPPolyDataWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_EndPiece           : bpy.props.IntProperty   ( name='EndPiece',            default=0 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
@@ -1689,10 +1603,10 @@ class VTKXMLPPolyDataWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=15, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1715,7 +1629,6 @@ class VTKXMLPRectilinearGridWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_EndPiece           : bpy.props.IntProperty   ( name='EndPiece',            default=0 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
@@ -1726,10 +1639,10 @@ class VTKXMLPRectilinearGridWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=15, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1752,7 +1665,6 @@ class VTKXMLPStructuredGridWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_EndPiece           : bpy.props.IntProperty   ( name='EndPiece',            default=0 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
@@ -1763,10 +1675,10 @@ class VTKXMLPStructuredGridWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=15, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1789,7 +1701,6 @@ class VTKXMLPTableWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_EndPiece           : bpy.props.IntProperty   ( name='EndPiece',            default=0 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
@@ -1800,10 +1711,10 @@ class VTKXMLPTableWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=15, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1824,7 +1735,6 @@ class VTKXMLPUniformGridAMRWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     m_WriteMetaFile      : bpy.props.IntProperty   ( name='WriteMetaFile',       default=1 )
@@ -1833,10 +1743,10 @@ class VTKXMLPUniformGridAMRWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1859,7 +1769,6 @@ class VTKXMLPUnstructuredGridWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_EndPiece           : bpy.props.IntProperty   ( name='EndPiece',            default=0 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
@@ -1870,81 +1779,15 @@ class VTKXMLPUnstructuredGridWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=15, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_UseSubdirectory','m_WriteSummaryFile','m_WriteToOutputString','m_FileName','m_BlockSize','m_EndPiece','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_StartPiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
 add_class( VTKXMLPUnstructuredGridWriter )        
 TYPENAMES.append('VTKXMLPUnstructuredGridWriterType' )
-
-#--------------------------------------------------------------
-class VTKXMLPartitionedDataSetCollectionWriter(Node, BVTK_Node):
-
-    bl_idname = 'VTKXMLPartitionedDataSetCollectionWriterType'
-    bl_label  = 'vtkXMLPartitionedDataSetCollectionWriter'
-    e_ByteOrder_items=[ (x,x,x) for x in ['BigEndian', 'LittleEndian']]
-    e_DataMode_items=[ (x,x,x) for x in ['Ascii', 'Binary', 'Appended']]
-    e_HeaderType_items=[ (x,x,x) for x in ['UInt32', 'UInt64']]
-    e_IdType_items=[ (x,x,x) for x in ['Int32', 'Int64']]
-    
-    m_EncodeAppendedData : bpy.props.BoolProperty  ( name='EncodeAppendedData',  default=True )
-    m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
-    m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
-    m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
-    m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
-    m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
-    m_WriteMetaFile      : bpy.props.IntProperty   ( name='WriteMetaFile',       default=1 )
-    e_ByteOrder          : bpy.props.EnumProperty  ( name='ByteOrder',           default="LittleEndian", items=e_ByteOrder_items )
-    e_DataMode           : bpy.props.EnumProperty  ( name='DataMode',            default="Appended", items=e_DataMode_items )
-    e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
-    e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
-    def m_connections( self ):
-        return (['input'], [], [], []) 
-    
-add_class( VTKXMLPartitionedDataSetCollectionWriter )        
-TYPENAMES.append('VTKXMLPartitionedDataSetCollectionWriterType' )
-
-#--------------------------------------------------------------
-class VTKXMLPartitionedDataSetWriter(Node, BVTK_Node):
-
-    bl_idname = 'VTKXMLPartitionedDataSetWriterType'
-    bl_label  = 'vtkXMLPartitionedDataSetWriter'
-    e_ByteOrder_items=[ (x,x,x) for x in ['BigEndian', 'LittleEndian']]
-    e_DataMode_items=[ (x,x,x) for x in ['Ascii', 'Binary', 'Appended']]
-    e_HeaderType_items=[ (x,x,x) for x in ['UInt32', 'UInt64']]
-    e_IdType_items=[ (x,x,x) for x in ['Int32', 'Int64']]
-    
-    m_EncodeAppendedData : bpy.props.BoolProperty  ( name='EncodeAppendedData',  default=True )
-    m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
-    m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
-    m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
-    m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
-    m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
-    m_WriteMetaFile      : bpy.props.IntProperty   ( name='WriteMetaFile',       default=1 )
-    e_ByteOrder          : bpy.props.EnumProperty  ( name='ByteOrder',           default="LittleEndian", items=e_ByteOrder_items )
-    e_DataMode           : bpy.props.EnumProperty  ( name='DataMode',            default="Appended", items=e_DataMode_items )
-    e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
-    e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
-    def m_connections( self ):
-        return (['input'], [], [], []) 
-    
-add_class( VTKXMLPartitionedDataSetWriter )        
-TYPENAMES.append('VTKXMLPartitionedDataSetWriterType' )
 
 #--------------------------------------------------------------
 class VTKXMLPolyDataWriter(Node, BVTK_Node):
@@ -1960,7 +1803,6 @@ class VTKXMLPolyDataWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
@@ -1970,10 +1812,10 @@ class VTKXMLPolyDataWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -1994,7 +1836,6 @@ class VTKXMLRectilinearGridWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty     ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty   ( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty      ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty      ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty      ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty      ( name='NumberOfPieces',      default=1 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty      ( name='NumberOfTimeSteps',   default=1 )
@@ -2005,10 +1846,10 @@ class VTKXMLRectilinearGridWriter(Node, BVTK_Node):
     e_IdType             : bpy.props.EnumProperty     ( name='IdType',              default="Int64", items=e_IdType_items )
     m_WriteExtent        : bpy.props.IntVectorProperty( name='WriteExtent',         default=[0, -1, 0, -1, 0, -1], size=6 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=14, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType','m_WriteExtent',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType','m_WriteExtent',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -2029,7 +1870,6 @@ class VTKXMLStructuredGridWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty     ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty   ( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty      ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty      ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty      ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty      ( name='NumberOfPieces',      default=1 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty      ( name='NumberOfTimeSteps',   default=1 )
@@ -2040,10 +1880,10 @@ class VTKXMLStructuredGridWriter(Node, BVTK_Node):
     e_IdType             : bpy.props.EnumProperty     ( name='IdType',              default="Int64", items=e_IdType_items )
     m_WriteExtent        : bpy.props.IntVectorProperty( name='WriteExtent',         default=[0, -1, 0, -1, 0, -1], size=6 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=14, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType','m_WriteExtent',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType','m_WriteExtent',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -2064,7 +1904,6 @@ class VTKXMLTableWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     m_WritePiece         : bpy.props.IntProperty   ( name='WritePiece',          default=-1 )
@@ -2073,10 +1912,10 @@ class VTKXMLTableWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -2097,7 +1936,6 @@ class VTKXMLUniformGridAMRWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
     m_WriteMetaFile      : bpy.props.IntProperty   ( name='WriteMetaFile',       default=1 )
@@ -2106,10 +1944,10 @@ class VTKXMLUniformGridAMRWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfTimeSteps','m_WriteMetaFile','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     
@@ -2130,7 +1968,6 @@ class VTKXMLUnstructuredGridWriter(Node, BVTK_Node):
     m_WriteToOutputString: bpy.props.BoolProperty  ( name='WriteToOutputString', default=True )
     m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
     m_BlockSize          : bpy.props.IntProperty   ( name='BlockSize',           default=32768 )
-    m_CompressionLevel   : bpy.props.IntProperty   ( name='CompressionLevel',    default=5 )
     m_GhostLevel         : bpy.props.IntProperty   ( name='GhostLevel',          default=0 )
     m_NumberOfPieces     : bpy.props.IntProperty   ( name='NumberOfPieces',      default=1 )
     m_NumberOfTimeSteps  : bpy.props.IntProperty   ( name='NumberOfTimeSteps',   default=1 )
@@ -2140,10 +1977,10 @@ class VTKXMLUnstructuredGridWriter(Node, BVTK_Node):
     e_HeaderType         : bpy.props.EnumProperty  ( name='HeaderType',          default="UInt32", items=e_HeaderType_items )
     e_IdType             : bpy.props.EnumProperty  ( name='IdType',              default="Int64", items=e_IdType_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_CompressionLevel','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
+        return ['m_EncodeAppendedData','m_WriteToOutputString','m_FileName','m_BlockSize','m_GhostLevel','m_NumberOfPieces','m_NumberOfTimeSteps','m_WritePiece','e_ByteOrder','e_DataMode','e_HeaderType','e_IdType',]
     def m_connections( self ):
         return (['input'], [], [], []) 
     

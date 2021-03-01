@@ -1,7 +1,7 @@
 # Generated definitions for VTK class group: Source
 # VTK version: 9.0.1
 
-from .core import *    
+from ..core import *    
 TYPENAMES = []
 
 #--------------------------------------------------------------
@@ -144,29 +144,6 @@ class VTKBoundedPointSource(Node, BVTK_Node):
     
 add_class( VTKBoundedPointSource )        
 TYPENAMES.append('VTKBoundedPointSourceType' )
-
-#--------------------------------------------------------------
-class VTKCapsuleSource(Node, BVTK_Node):
-
-    bl_idname = 'VTKCapsuleSourceType'
-    bl_label  = 'vtkCapsuleSource'
-    
-    m_LatLongTessellation: bpy.props.BoolProperty       ( name='LatLongTessellation', default=True )
-    m_PhiResolution      : bpy.props.IntProperty        ( name='PhiResolution',       default=8 )
-    m_ThetaResolution    : bpy.props.IntProperty        ( name='ThetaResolution',     default=8 )
-    m_CylinderLength     : bpy.props.FloatProperty      ( name='CylinderLength',      default=1.0 )
-    m_Radius             : bpy.props.FloatProperty      ( name='Radius',              default=0.5 )
-    m_Center             : bpy.props.FloatVectorProperty( name='Center',              default=[0.0, 0.0, 0.0], size=3 )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=6, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_LatLongTessellation','m_PhiResolution','m_ThetaResolution','m_CylinderLength','m_Radius','m_Center',]
-    def m_connections( self ):
-        return ([], ['output'], [], []) 
-    
-add_class( VTKCapsuleSource )        
-TYPENAMES.append('VTKCapsuleSourceType' )
 
 #--------------------------------------------------------------
 class VTKCellTypeSource(Node, BVTK_Node):
@@ -395,7 +372,6 @@ class VTKEllipseArcSource(Node, BVTK_Node):
     bl_idname = 'VTKEllipseArcSourceType'
     bl_label  = 'vtkEllipseArcSource'
     
-    m_Close            : bpy.props.BoolProperty       ( name='Close',             default=False )
     m_Resolution       : bpy.props.IntProperty        ( name='Resolution',        default=100 )
     m_Ratio            : bpy.props.FloatProperty      ( name='Ratio',             default=1.0 )
     m_SegmentAngle     : bpy.props.FloatProperty      ( name='SegmentAngle',      default=90.0 )
@@ -404,10 +380,10 @@ class VTKEllipseArcSource(Node, BVTK_Node):
     m_MajorRadiusVector: bpy.props.FloatVectorProperty( name='MajorRadiusVector', default=[1.0, 0.0, 0.0], size=3 )
     m_Normal           : bpy.props.FloatVectorProperty( name='Normal',            default=[0.0, 0.0, 1.0], size=3 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=8, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=7, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_Close','m_Resolution','m_Ratio','m_SegmentAngle','m_StartAngle','m_Center','m_MajorRadiusVector','m_Normal',]
+        return ['m_Resolution','m_Ratio','m_SegmentAngle','m_StartAngle','m_Center','m_MajorRadiusVector','m_Normal',]
     def m_connections( self ):
         return ([], ['output'], [], []) 
     
@@ -510,6 +486,59 @@ add_class( VTKGlyphSource2D )
 TYPENAMES.append('VTKGlyphSource2DType' )
 
 #--------------------------------------------------------------
+class VTKHyperOctreeFractalSource(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeFractalSourceType'
+    bl_label  = 'vtkHyperOctreeFractalSource'
+    
+    m_Dimension                : bpy.props.IntProperty        ( name='Dimension',                 default=3 )
+    m_MaximumLevel             : bpy.props.IntProperty        ( name='MaximumLevel',              default=5 )
+    m_MaximumNumberOfIterations: bpy.props.IntProperty        ( name='MaximumNumberOfIterations', default=100 )
+    m_MinimumLevel             : bpy.props.IntProperty        ( name='MinimumLevel',              default=3 )
+    m_SpanThreshold            : bpy.props.FloatProperty      ( name='SpanThreshold',             default=2.0 )
+    m_ProjectionAxes           : bpy.props.IntVectorProperty  ( name='ProjectionAxes',            default=[0, 1, 2], size=3 )
+    m_OriginCX                 : bpy.props.FloatVectorProperty( name='OriginCX',                  default=[-1.75, -1.25, 0.0, 0.0], size=4 )
+    m_SizeCX                   : bpy.props.FloatVectorProperty( name='SizeCX',                    default=[2.5, 2.5, 2.0, 1.5], size=4 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=8, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_Dimension','m_MaximumLevel','m_MaximumNumberOfIterations','m_MinimumLevel','m_SpanThreshold','m_ProjectionAxes','m_OriginCX','m_SizeCX',]
+    def m_connections( self ):
+        return ([], ['output'], [], []) 
+    
+add_class( VTKHyperOctreeFractalSource )        
+TYPENAMES.append('VTKHyperOctreeFractalSourceType' )
+
+#--------------------------------------------------------------
+class VTKHyperOctreeSampleFunction(Node, BVTK_Node):
+
+    bl_idname = 'VTKHyperOctreeSampleFunctionType'
+    bl_label  = 'vtkHyperOctreeSampleFunction'
+    e_OutputScalarType_items=[ (x,x,x) for x in ['Char', 'UnsignedChar', 'Short', 'UnsignedShort', 'Int', 'UnsignedInt', 'Long', 'UnsignedLong', 'Float', 'Double']]
+    
+    m_Dimension       : bpy.props.IntProperty        ( name='Dimension',        default=3 )
+    m_Levels          : bpy.props.IntProperty        ( name='Levels',           default=5 )
+    m_MinLevels       : bpy.props.IntProperty        ( name='MinLevels',        default=1 )
+    m_Depth           : bpy.props.FloatProperty      ( name='Depth',            default=1.0 )
+    m_Height          : bpy.props.FloatProperty      ( name='Height',           default=1.0 )
+    m_Threshold       : bpy.props.FloatProperty      ( name='Threshold',        default=0.1 )
+    m_Width           : bpy.props.FloatProperty      ( name='Width',            default=1.0 )
+    e_OutputScalarType: bpy.props.EnumProperty       ( name='OutputScalarType', default="Double", items=e_OutputScalarType_items )
+    m_Origin          : bpy.props.FloatVectorProperty( name='Origin',           default=[0.0, 0.0, 0.0], size=3 )
+    m_Size            : bpy.props.FloatVectorProperty( name='Size',             default=[1.0, 1.0, 1.0], size=3 )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=10, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_Dimension','m_Levels','m_MinLevels','m_Depth','m_Height','m_Threshold','m_Width','e_OutputScalarType','m_Origin','m_Size',]
+    def m_connections( self ):
+        return ([], ['output'], ['ImplicitFunction'], []) 
+    
+add_class( VTKHyperOctreeSampleFunction )        
+TYPENAMES.append('VTKHyperOctreeSampleFunctionType' )
+
+#--------------------------------------------------------------
 class VTKHyperTreeGridSource(Node, BVTK_Node):
 
     bl_idname = 'VTKHyperTreeGridSourceType'
@@ -518,21 +547,23 @@ class VTKHyperTreeGridSource(Node, BVTK_Node):
     m_GenerateInterfaceFields: bpy.props.BoolProperty       ( name='GenerateInterfaceFields', default=False )
     m_TransposedRootIndexing : bpy.props.BoolProperty       ( name='TransposedRootIndexing',  default=False )
     m_UseDescriptor          : bpy.props.BoolProperty       ( name='UseDescriptor',           default=True )
-    m_UseMask                : bpy.props.BoolProperty       ( name='UseMask',                 default=False )
+    m_UseMaterialMask        : bpy.props.BoolProperty       ( name='UseMaterialMask',         default=False )
     m_Descriptor             : bpy.props.StringProperty     ( name='Descriptor',              default="." )
-    m_Mask                   : bpy.props.StringProperty     ( name='Mask',                    default="0" )
+    m_MaterialMask           : bpy.props.StringProperty     ( name='MaterialMask',            default="0" )
     m_BranchFactor           : bpy.props.IntProperty        ( name='BranchFactor',            default=2 )
-    m_MaxDepth               : bpy.props.IntProperty        ( name='MaxDepth',                default=1 )
+    m_Dimension              : bpy.props.IntProperty        ( name='Dimension',               default=3 )
     m_MaximumLevel           : bpy.props.IntProperty        ( name='MaximumLevel',            default=1 )
+    m_Orientation            : bpy.props.IntProperty        ( name='Orientation',             default=0 )
+    m_GridSize               : bpy.props.IntVectorProperty  ( name='GridSize',                default=[1, 1, 1], size=3 )
     m_GridScale              : bpy.props.FloatVectorProperty( name='GridScale',               default=[1.0, 1.0, 1.0], size=3 )
     m_Origin                 : bpy.props.FloatVectorProperty( name='Origin',                  default=[0.0, 0.0, 0.0], size=3 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_GenerateInterfaceFields','m_TransposedRootIndexing','m_UseDescriptor','m_UseMask','m_Descriptor','m_Mask','m_BranchFactor','m_MaxDepth','m_MaximumLevel','m_GridScale','m_Origin',]
+        return ['m_GenerateInterfaceFields','m_TransposedRootIndexing','m_UseDescriptor','m_UseMaterialMask','m_Descriptor','m_MaterialMask','m_BranchFactor','m_Dimension','m_MaximumLevel','m_Orientation','m_GridSize','m_GridScale','m_Origin',]
     def m_connections( self ):
-        return ([], ['output'], ['Quadric', 'DescriptorBits', 'MaskBits'], []) 
+        return ([], ['output'], ['Quadric', 'DescriptorBits', 'MaterialMaskBits'], []) 
     
 add_class( VTKHyperTreeGridSource )        
 TYPENAMES.append('VTKHyperTreeGridSourceType' )
@@ -765,16 +796,14 @@ class VTKLineSource(Node, BVTK_Node):
     bl_idname = 'VTKLineSourceType'
     bl_label  = 'vtkLineSource'
     
-    m_UseRegularRefinement    : bpy.props.BoolProperty       ( name='UseRegularRefinement',     default=True )
-    m_NumberOfRefinementRatios: bpy.props.IntProperty        ( name='NumberOfRefinementRatios', default=0 )
-    m_Resolution              : bpy.props.IntProperty        ( name='Resolution',               default=1 )
-    m_Point1                  : bpy.props.FloatVectorProperty( name='Point1',                   default=[-0.5, 0.0, 0.0], size=3 )
-    m_Point2                  : bpy.props.FloatVectorProperty( name='Point2',                   default=[0.5, 0.0, 0.0], size=3 )
+    m_Resolution: bpy.props.IntProperty        ( name='Resolution', default=1 )
+    m_Point1    : bpy.props.FloatVectorProperty( name='Point1',     default=[-0.5, 0.0, 0.0], size=3 )
+    m_Point2    : bpy.props.FloatVectorProperty( name='Point2',     default=[0.5, 0.0, 0.0], size=3 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=5, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=3, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_UseRegularRefinement','m_NumberOfRefinementRatios','m_Resolution','m_Point1','m_Point2',]
+        return ['m_Resolution','m_Point1','m_Point2',]
     def m_connections( self ):
         return ([], ['output'], ['Points'], []) 
     
@@ -981,24 +1010,6 @@ add_class( VTKPolyLineSource )
 TYPENAMES.append('VTKPolyLineSourceType' )
 
 #--------------------------------------------------------------
-class VTKPolyPointSource(Node, BVTK_Node):
-
-    bl_idname = 'VTKPolyPointSourceType'
-    bl_label  = 'vtkPolyPointSource'
-    
-    m_NumberOfPoints: bpy.props.IntProperty( name='NumberOfPoints', default=0 )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_NumberOfPoints',]
-    def m_connections( self ):
-        return ([], ['output'], ['Points'], []) 
-    
-add_class( VTKPolyPointSource )        
-TYPENAMES.append('VTKPolyPointSourceType' )
-
-#--------------------------------------------------------------
 class VTKProgrammableDataObjectSource(Node, BVTK_Node):
 
     bl_idname = 'VTKProgrammableDataObjectSourceType'
@@ -1064,28 +1075,6 @@ class VTKRTAnalyticSource(Node, BVTK_Node):
     
 add_class( VTKRTAnalyticSource )        
 TYPENAMES.append('VTKRTAnalyticSourceType' )
-
-#--------------------------------------------------------------
-class VTKRandomHyperTreeGridSource(Node, BVTK_Node):
-
-    bl_idname = 'VTKRandomHyperTreeGridSourceType'
-    bl_label  = 'vtkRandomHyperTreeGridSource'
-    
-    m_MaxDepth     : bpy.props.IntProperty        ( name='MaxDepth',      default=5 )
-    m_Seed         : bpy.props.IntProperty        ( name='Seed',          default=0 )
-    m_SplitFraction: bpy.props.FloatProperty      ( name='SplitFraction', default=0.5 )
-    m_Dimensions   : bpy.props.IntVectorProperty  ( name='Dimensions',    default=[6, 6, 3], size=3 )
-    m_OutputBounds : bpy.props.FloatVectorProperty( name='OutputBounds',  default=[-10.0, 10.0, -10.0, 10.0, -10.0, 10.0], size=6 )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=5, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_MaxDepth','m_Seed','m_SplitFraction','m_Dimensions','m_OutputBounds',]
-    def m_connections( self ):
-        return ([], ['output'], [], []) 
-    
-add_class( VTKRandomHyperTreeGridSource )        
-TYPENAMES.append('VTKRandomHyperTreeGridSourceType' )
 
 #--------------------------------------------------------------
 class VTKRectangularButtonSource(Node, BVTK_Node):
@@ -1242,12 +1231,11 @@ class VTKSelectionSource(Node, BVTK_Node):
     m_HierarchicalIndex: bpy.props.IntProperty   ( name='HierarchicalIndex', default=-1 )
     m_HierarchicalLevel: bpy.props.IntProperty   ( name='HierarchicalLevel', default=-1 )
     m_Inverse          : bpy.props.IntProperty   ( name='Inverse',           default=0 )
-    m_NumberOfLayers   : bpy.props.IntProperty   ( name='NumberOfLayers',    default=0 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=10, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_ArrayName','m_QueryString','m_ArrayComponent','m_CompositeIndex','m_ContainingCells','m_ContentType','m_FieldType','m_HierarchicalIndex','m_HierarchicalLevel','m_Inverse','m_NumberOfLayers',]
+        return ['m_ArrayName','m_QueryString','m_ArrayComponent','m_CompositeIndex','m_ContainingCells','m_ContentType','m_FieldType','m_HierarchicalIndex','m_HierarchicalLevel','m_Inverse',]
     def m_connections( self ):
         return ([], ['output'], [], []) 
     
@@ -1352,7 +1340,7 @@ class VTKTemporalFractal(Node, BVTK_Node):
     m_GenerateRectilinearGrids: bpy.props.BoolProperty ( name='GenerateRectilinearGrids', default=True )
     m_GhostLevels             : bpy.props.BoolProperty ( name='GhostLevels',              default=True )
     m_TwoDimensional          : bpy.props.BoolProperty ( name='TwoDimensional',           default=True )
-    m_Asymmetric              : bpy.props.IntProperty  ( name='Asymmetric',               default=1 )
+    m_Asymetric               : bpy.props.IntProperty  ( name='Asymetric',                default=1 )
     m_Dimensions              : bpy.props.IntProperty  ( name='Dimensions',               default=10 )
     m_MaximumLevel            : bpy.props.IntProperty  ( name='MaximumLevel',             default=6 )
     m_FractalValue            : bpy.props.FloatProperty( name='FractalValue',             default=9.5 )
@@ -1360,7 +1348,7 @@ class VTKTemporalFractal(Node, BVTK_Node):
     b_properties: bpy.props.BoolVectorProperty(name="", size=9, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_AdaptiveSubdivision','m_DiscreteTimeSteps','m_GenerateRectilinearGrids','m_GhostLevels','m_TwoDimensional','m_Asymmetric','m_Dimensions','m_MaximumLevel','m_FractalValue',]
+        return ['m_AdaptiveSubdivision','m_DiscreteTimeSteps','m_GenerateRectilinearGrids','m_GhostLevels','m_TwoDimensional','m_Asymetric','m_Dimensions','m_MaximumLevel','m_FractalValue',]
     def m_connections( self ):
         return ([], ['output'], [], []) 
     
@@ -1513,34 +1501,6 @@ add_class( VTKTrivialProducer )
 TYPENAMES.append('VTKTrivialProducerType' )
 
 #--------------------------------------------------------------
-class VTKUniformHyperTreeGridSource(Node, BVTK_Node):
-
-    bl_idname = 'VTKUniformHyperTreeGridSourceType'
-    bl_label  = 'vtkUniformHyperTreeGridSource'
-    
-    m_GenerateInterfaceFields: bpy.props.BoolProperty       ( name='GenerateInterfaceFields', default=False )
-    m_TransposedRootIndexing : bpy.props.BoolProperty       ( name='TransposedRootIndexing',  default=False )
-    m_UseDescriptor          : bpy.props.BoolProperty       ( name='UseDescriptor',           default=True )
-    m_UseMask                : bpy.props.BoolProperty       ( name='UseMask',                 default=False )
-    m_Descriptor             : bpy.props.StringProperty     ( name='Descriptor',              default="." )
-    m_Mask                   : bpy.props.StringProperty     ( name='Mask',                    default="0" )
-    m_BranchFactor           : bpy.props.IntProperty        ( name='BranchFactor',            default=2 )
-    m_MaxDepth               : bpy.props.IntProperty        ( name='MaxDepth',                default=1 )
-    m_MaximumLevel           : bpy.props.IntProperty        ( name='MaximumLevel',            default=1 )
-    m_GridScale              : bpy.props.FloatVectorProperty( name='GridScale',               default=[1.0, 1.0, 1.0], size=3 )
-    m_Origin                 : bpy.props.FloatVectorProperty( name='Origin',                  default=[0.0, 0.0, 0.0], size=3 )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=11, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_GenerateInterfaceFields','m_TransposedRootIndexing','m_UseDescriptor','m_UseMask','m_Descriptor','m_Mask','m_BranchFactor','m_MaxDepth','m_MaximumLevel','m_GridScale','m_Origin',]
-    def m_connections( self ):
-        return ([], ['output'], ['Quadric', 'DescriptorBits', 'MaskBits'], []) 
-    
-add_class( VTKUniformHyperTreeGridSource )        
-TYPENAMES.append('VTKUniformHyperTreeGridSourceType' )
-
-#--------------------------------------------------------------
 class VTKVectorText(Node, BVTK_Node):
 
     bl_idname = 'VTKVectorTextType'
@@ -1598,52 +1558,20 @@ class VTKWindowToImageFilter(Node, BVTK_Node):
     m_FixBoundary    : bpy.props.BoolProperty       ( name='FixBoundary',     default=False )
     m_ReadFrontBuffer: bpy.props.BoolProperty       ( name='ReadFrontBuffer', default=True )
     m_ShouldRerender : bpy.props.BoolProperty       ( name='ShouldRerender',  default=True )
+    m_Magnification  : bpy.props.IntProperty        ( name='Magnification',   default=1 )
     e_InputBufferType: bpy.props.EnumProperty       ( name='InputBufferType', default="RGB", items=e_InputBufferType_items )
     m_Scale          : bpy.props.IntVectorProperty  ( name='Scale',           default=[1, 1], size=2 )
     m_Viewport       : bpy.props.FloatVectorProperty( name='Viewport',        default=[0.0, 0.0, 1.0, 1.0], size=4 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=6, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=7, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_FixBoundary','m_ReadFrontBuffer','m_ShouldRerender','e_InputBufferType','m_Scale','m_Viewport',]
+        return ['m_FixBoundary','m_ReadFrontBuffer','m_ShouldRerender','m_Magnification','e_InputBufferType','m_Scale','m_Viewport',]
     def m_connections( self ):
         return ([], ['output'], ['Input'], []) 
     
 add_class( VTKWindowToImageFilter )        
 TYPENAMES.append('VTKWindowToImageFilterType' )
-
-#--------------------------------------------------------------
-class VTKWordCloud(Node, BVTK_Node):
-
-    bl_idname = 'VTKWordCloudType'
-    bl_label  = 'vtkWordCloud'
-    
-    m_BWMask             : bpy.props.BoolProperty  ( name='BWMask',              default=False )
-    m_BackgroundColorName: bpy.props.StringProperty( name='BackgroundColorName', default="MidnightBlue" )
-    m_ColorSchemeName    : bpy.props.StringProperty( name='ColorSchemeName',     default="" )
-    m_FileName           : bpy.props.StringProperty( name='FileName',            default="", subtype='FILE_PATH' )
-    m_FontFileName       : bpy.props.StringProperty( name='FontFileName',        default="", subtype='FILE_PATH' )
-    m_MaskColorName      : bpy.props.StringProperty( name='MaskColorName',       default="black" )
-    m_MaskFileName       : bpy.props.StringProperty( name='MaskFileName',        default="", subtype='FILE_PATH' )
-    m_StopListFileName   : bpy.props.StringProperty( name='StopListFileName',    default="", subtype='FILE_PATH' )
-    m_Title              : bpy.props.StringProperty( name='Title',               default="" )
-    m_WordColorName      : bpy.props.StringProperty( name='WordColorName',       default="" )
-    m_DPI                : bpy.props.IntProperty   ( name='DPI',                 default=200 )
-    m_FontMultiplier     : bpy.props.IntProperty   ( name='FontMultiplier',      default=6 )
-    m_Gap                : bpy.props.IntProperty   ( name='Gap',                 default=2 )
-    m_MaxFontSize        : bpy.props.IntProperty   ( name='MaxFontSize',         default=48 )
-    m_MinFontSize        : bpy.props.IntProperty   ( name='MinFontSize',         default=12 )
-    m_MinFrequency       : bpy.props.IntProperty   ( name='MinFrequency',        default=1 )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=16, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_BWMask','m_BackgroundColorName','m_ColorSchemeName','m_FileName','m_FontFileName','m_MaskColorName','m_MaskFileName','m_StopListFileName','m_Title','m_WordColorName','m_DPI','m_FontMultiplier','m_Gap','m_MaxFontSize','m_MinFontSize','m_MinFrequency',]
-    def m_connections( self ):
-        return ([], ['output'], ['Orientations'], []) 
-    
-add_class( VTKWordCloud )        
-TYPENAMES.append('VTKWordCloudType' )
 
 #--------------------------------------------------------------
 menu_items = [ NodeItem(x) for x in TYPENAMES ]

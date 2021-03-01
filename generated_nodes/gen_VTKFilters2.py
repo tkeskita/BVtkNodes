@@ -1,7 +1,7 @@
 # Generated definitions for VTK class group: Filter2
 # VTK version: 9.0.1
 
-from .core import *    
+from ..core import *    
 TYPENAMES = []
 
 #--------------------------------------------------------------
@@ -163,7 +163,7 @@ class VTKCompositeDataProbeFilter(Node, BVTK_Node):
     def m_properties( self ):
         return ['m_CategoricalData','m_ComputeTolerance','m_PassCellArrays','m_PassFieldArrays','m_PassPartialArrays','m_PassPointArrays','m_SpatialMatch','m_ValidPointMaskArrayName','m_Tolerance',]
     def m_connections( self ):
-        return (['input 0', 'input 1'], ['output'], ['CellLocatorPrototype', 'FindCellStrategy'], []) 
+        return (['input 0', 'input 1'], ['output'], [], []) 
     
 add_class( VTKCompositeDataProbeFilter )        
 TYPENAMES.append('VTKCompositeDataProbeFilterType' )
@@ -269,6 +269,24 @@ add_class( VTKDepthImageToPointCloud )
 TYPENAMES.append('VTKDepthImageToPointCloudType' )
 
 #--------------------------------------------------------------
+class VTKExtractArraysOverTime(Node, BVTK_Node):
+
+    bl_idname = 'VTKExtractArraysOverTimeType'
+    bl_label  = 'vtkExtractArraysOverTime'
+    
+    m_ReportStatisticsOnly: bpy.props.BoolProperty( name='ReportStatisticsOnly', default=True )
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    def m_properties( self ):
+        return ['m_ReportStatisticsOnly',]
+    def m_connections( self ):
+        return (['input 0', 'input 1'], ['output'], ['SelectionExtractor'], []) 
+    
+add_class( VTKExtractArraysOverTime )        
+TYPENAMES.append('VTKExtractArraysOverTimeType' )
+
+#--------------------------------------------------------------
 class VTKExtractFunctionalBagPlot(Node, BVTK_Node):
 
     bl_idname = 'VTKExtractFunctionalBagPlotType'
@@ -284,24 +302,6 @@ class VTKExtractFunctionalBagPlot(Node, BVTK_Node):
     
 add_class( VTKExtractFunctionalBagPlot )        
 TYPENAMES.append('VTKExtractFunctionalBagPlotType' )
-
-#--------------------------------------------------------------
-class VTKExtractSelectedArraysOverTime(Node, BVTK_Node):
-
-    bl_idname = 'VTKExtractSelectedArraysOverTimeType'
-    bl_label  = 'vtkExtractSelectedArraysOverTime'
-    
-    m_ReportStatisticsOnly: bpy.props.BoolProperty( name='ReportStatisticsOnly', default=False )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_ReportStatisticsOnly',]
-    def m_connections( self ):
-        return (['input 0', 'input 1'], ['output'], ['SelectionExtractor'], []) 
-    
-add_class( VTKExtractSelectedArraysOverTime )        
-TYPENAMES.append('VTKExtractSelectedArraysOverTimeType' )
 
 #--------------------------------------------------------------
 class VTKExtractSelectedBlock(Node, BVTK_Node):
@@ -420,12 +420,14 @@ class VTKExtractSelection(Node, BVTK_Node):
     bl_idname = 'VTKExtractSelectionType'
     bl_label  = 'vtkExtractSelection'
     
-    m_PreserveTopology: bpy.props.BoolProperty( name='PreserveTopology', default=False )
+    m_PreserveTopology    : bpy.props.BoolProperty( name='PreserveTopology',     default=True )
+    m_ShowBounds          : bpy.props.BoolProperty( name='ShowBounds',           default=True )
+    m_UseProbeForLocations: bpy.props.BoolProperty( name='UseProbeForLocations', default=True )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=3, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_PreserveTopology',]
+        return ['m_PreserveTopology','m_ShowBounds','m_UseProbeForLocations',]
     def m_connections( self ):
         return (['input 0', 'input 1'], ['output'], [], []) 
     
@@ -471,26 +473,6 @@ class VTKFiberSurface(Node, BVTK_Node):
     
 add_class( VTKFiberSurface )        
 TYPENAMES.append('VTKFiberSurfaceType' )
-
-#--------------------------------------------------------------
-class VTKFitToHeightMapFilter(Node, BVTK_Node):
-
-    bl_idname = 'VTKFitToHeightMapFilterType'
-    bl_label  = 'vtkFitToHeightMapFilter'
-    e_FittingStrategy_items=[ (x,x,x) for x in ['PointProjection', 'PointMinimumHeight', 'PointMaximumHeight', 'AverageHeight', 'CellMinimumHeight', 'CellMaximumHeight', 'CellAverageHeight']]
-    
-    m_UseHeightMapOffset: bpy.props.BoolProperty( name='UseHeightMapOffset', default=True )
-    e_FittingStrategy   : bpy.props.EnumProperty( name='FittingStrategy',    default="PointProjection", items=e_FittingStrategy_items )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=2, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_UseHeightMapOffset','e_FittingStrategy',]
-    def m_connections( self ):
-        return (['input 0', 'input 1'], ['output'], [], []) 
-    
-add_class( VTKFitToHeightMapFilter )        
-TYPENAMES.append('VTKFitToHeightMapFilterType' )
 
 #--------------------------------------------------------------
 class VTKGenericGlyph3DFilter(Node, BVTK_Node):
@@ -671,20 +653,19 @@ class VTKImageBlend(Node, BVTK_Node):
     e_BlendMode_items=[ (x,x,x) for x in ['Normal', 'Compound']]
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_CompoundAlpha         : bpy.props.BoolProperty     ( name='CompoundAlpha',          default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_CompoundThreshold     : bpy.props.FloatProperty    ( name='CompoundThreshold',      default=0.0 )
     e_BlendMode             : bpy.props.EnumProperty     ( name='BlendMode',              default="Normal", items=e_BlendMode_items )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=9, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=8, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_CompoundAlpha','m_EnableSMP','m_GlobalDefaultEnableSMP','m_DesiredBytesPerPiece','m_NumberOfThreads','m_CompoundThreshold','e_BlendMode','e_SplitMode','m_MinimumPieceSize',]
+        return ['m_EnableSMP','m_GlobalDefaultEnableSMP','m_DesiredBytesPerPiece','m_NumberOfThreads','m_CompoundThreshold','e_BlendMode','e_SplitMode','m_MinimumPieceSize',]
     def m_connections( self ):
         return (['input 0', 'input 1'], ['output'], [], []) 
     
@@ -723,10 +704,10 @@ class VTKImageCheckerboard(Node, BVTK_Node):
     bl_label  = 'vtkImageCheckerboard'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     m_NumberOfDivisions     : bpy.props.IntVectorProperty( name='NumberOfDivisions',      default=[2, 2, 2], size=3 )
@@ -748,11 +729,11 @@ class VTKImageCorrelation(Node, BVTK_Node):
     bl_label  = 'vtkImageCorrelation'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=2 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -775,19 +756,18 @@ class VTKImageDifference(Node, BVTK_Node):
     
     m_AllowShift            : bpy.props.BoolProperty     ( name='AllowShift',             default=True )
     m_Averaging             : bpy.props.BoolProperty     ( name='Averaging',              default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
-    m_Threshold             : bpy.props.IntProperty      ( name='Threshold',              default=105 )
-    m_AverageThresholdFactor: bpy.props.FloatProperty    ( name='AverageThresholdFactor', default=0.65 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
+    m_Threshold             : bpy.props.IntProperty      ( name='Threshold',              default=16 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=10, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=9, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_AllowShift','m_Averaging','m_EnableSMP','m_GlobalDefaultEnableSMP','m_DesiredBytesPerPiece','m_NumberOfThreads','m_Threshold','m_AverageThresholdFactor','e_SplitMode','m_MinimumPieceSize',]
+        return ['m_AllowShift','m_Averaging','m_EnableSMP','m_GlobalDefaultEnableSMP','m_DesiredBytesPerPiece','m_NumberOfThreads','m_Threshold','e_SplitMode','m_MinimumPieceSize',]
     def m_connections( self ):
         return (['input 0', 'input 1'], ['output'], [], []) 
     
@@ -801,10 +781,10 @@ class VTKImageDotProduct(Node, BVTK_Node):
     bl_label  = 'vtkImageDotProduct'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -827,14 +807,14 @@ class VTKImageHistogram(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
     m_AutomaticBinning      : bpy.props.BoolProperty     ( name='AutomaticBinning',       default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
     m_GenerateHistogramImage: bpy.props.BoolProperty     ( name='GenerateHistogramImage', default=True )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_ActiveComponent       : bpy.props.IntProperty      ( name='ActiveComponent',        default=-1 )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_MaximumNumberOfBins   : bpy.props.IntProperty      ( name='MaximumNumberOfBins',    default=65536 )
     m_NumberOfBins          : bpy.props.IntProperty      ( name='NumberOfBins',           default=256 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_BinOrigin             : bpy.props.FloatProperty    ( name='BinOrigin',              default=0.0 )
     m_BinSpacing            : bpy.props.FloatProperty    ( name='BinSpacing',             default=1.0 )
     e_HistogramImageScale   : bpy.props.EnumProperty     ( name='HistogramImageScale',    default="Linear", items=e_HistogramImageScale_items )
@@ -861,14 +841,14 @@ class VTKImageHistogramStatistics(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
     m_AutomaticBinning         : bpy.props.BoolProperty       ( name='AutomaticBinning',          default=True )
-    m_EnableSMP                : bpy.props.BoolProperty       ( name='EnableSMP',                 default=False )
+    m_EnableSMP                : bpy.props.BoolProperty       ( name='EnableSMP',                 default=True )
     m_GenerateHistogramImage   : bpy.props.BoolProperty       ( name='GenerateHistogramImage',    default=True )
-    m_GlobalDefaultEnableSMP   : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',    default=False )
+    m_GlobalDefaultEnableSMP   : bpy.props.BoolProperty       ( name='GlobalDefaultEnableSMP',    default=True )
     m_ActiveComponent          : bpy.props.IntProperty        ( name='ActiveComponent',           default=-1 )
     m_DesiredBytesPerPiece     : bpy.props.IntProperty        ( name='DesiredBytesPerPiece',      default=65536 )
     m_MaximumNumberOfBins      : bpy.props.IntProperty        ( name='MaximumNumberOfBins',       default=65536 )
     m_NumberOfBins             : bpy.props.IntProperty        ( name='NumberOfBins',              default=256 )
-    m_NumberOfThreads          : bpy.props.IntProperty        ( name='NumberOfThreads',           default=4 )
+    m_NumberOfThreads          : bpy.props.IntProperty        ( name='NumberOfThreads',           default=12 )
     m_BinOrigin                : bpy.props.FloatProperty      ( name='BinOrigin',                 default=0.0 )
     m_BinSpacing               : bpy.props.FloatProperty      ( name='BinSpacing',                default=1.0 )
     e_HistogramImageScale      : bpy.props.EnumProperty       ( name='HistogramImageScale',       default="Linear", items=e_HistogramImageScale_items )
@@ -896,10 +876,10 @@ class VTKImageLogic(Node, BVTK_Node):
     e_Operation_items=[ (x,x,x) for x in ['And', 'Or', 'Xor', 'Nand', 'Nor', 'Not']]
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_OutputTrueValue       : bpy.props.FloatProperty    ( name='OutputTrueValue',        default=255.0 )
     e_Operation             : bpy.props.EnumProperty     ( name='Operation',              default="And", items=e_Operation_items )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
@@ -922,11 +902,11 @@ class VTKImageMask(Node, BVTK_Node):
     bl_label  = 'vtkImageMask'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_NotMask               : bpy.props.BoolProperty     ( name='NotMask',                default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_MaskAlpha             : bpy.props.FloatProperty    ( name='MaskAlpha',              default=1.0 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
@@ -950,10 +930,10 @@ class VTKImageMathematics(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
     m_DivideByZeroToC       : bpy.props.BoolProperty     ( name='DivideByZeroToC',        default=True )
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     m_ConstantC             : bpy.props.FloatProperty    ( name='ConstantC',              default=0.0 )
     m_ConstantK             : bpy.props.FloatProperty    ( name='ConstantK',              default=1.0 )
     e_Operation             : bpy.props.EnumProperty     ( name='Operation',              default="Add", items=e_Operation_items )
@@ -977,12 +957,12 @@ class VTKImageNonMaximumSuppression(Node, BVTK_Node):
     bl_label  = 'vtkImageNonMaximumSuppression'
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_HandleBoundaries      : bpy.props.BoolProperty     ( name='HandleBoundaries',       default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
     m_Dimensionality        : bpy.props.IntProperty      ( name='Dimensionality',         default=2 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     m_MinimumPieceSize      : bpy.props.IntVectorProperty( name='MinimumPieceSize',       default=[16, 1, 1], size=3 )
     
@@ -1004,10 +984,10 @@ class VTKImageRectilinearWipe(Node, BVTK_Node):
     e_SplitMode_items=[ (x,x,x) for x in ['Slab', 'Beam', 'Block']]
     e_Wipe_items=[ (x,x,x) for x in ['Quad', 'Horizontal', 'Vertical', 'LowerLeft', 'LowerRight', 'UpperLeft', 'UpperRight']]
     
-    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=False )
-    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=False )
+    m_EnableSMP             : bpy.props.BoolProperty     ( name='EnableSMP',              default=True )
+    m_GlobalDefaultEnableSMP: bpy.props.BoolProperty     ( name='GlobalDefaultEnableSMP', default=True )
     m_DesiredBytesPerPiece  : bpy.props.IntProperty      ( name='DesiredBytesPerPiece',   default=65536 )
-    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=4 )
+    m_NumberOfThreads       : bpy.props.IntProperty      ( name='NumberOfThreads',        default=12 )
     e_SplitMode             : bpy.props.EnumProperty     ( name='SplitMode',              default="Slab", items=e_SplitMode_items )
     e_Wipe                  : bpy.props.EnumProperty     ( name='Wipe',                   default="Quad", items=e_Wipe_items )
     m_Axis                  : bpy.props.IntVectorProperty( name='Axis',                   default=[0, 1], size=2 )
@@ -1105,12 +1085,12 @@ add_class( VTKMergeDataObjectFilter )
 TYPENAMES.append('VTKMergeDataObjectFilterType' )
 
 #--------------------------------------------------------------
-class VTKPExtractSelectedArraysOverTime(Node, BVTK_Node):
+class VTKPExtractArraysOverTime(Node, BVTK_Node):
 
-    bl_idname = 'VTKPExtractSelectedArraysOverTimeType'
-    bl_label  = 'vtkPExtractSelectedArraysOverTime'
+    bl_idname = 'VTKPExtractArraysOverTimeType'
+    bl_label  = 'vtkPExtractArraysOverTime'
     
-    m_ReportStatisticsOnly: bpy.props.BoolProperty( name='ReportStatisticsOnly', default=False )
+    m_ReportStatisticsOnly: bpy.props.BoolProperty( name='ReportStatisticsOnly', default=True )
     
     b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
@@ -1119,8 +1099,8 @@ class VTKPExtractSelectedArraysOverTime(Node, BVTK_Node):
     def m_connections( self ):
         return (['input 0', 'input 1'], ['output'], ['SelectionExtractor'], []) 
     
-add_class( VTKPExtractSelectedArraysOverTime )        
-TYPENAMES.append('VTKPExtractSelectedArraysOverTimeType' )
+add_class( VTKPExtractArraysOverTime )        
+TYPENAMES.append('VTKPExtractArraysOverTimeType' )
 
 #--------------------------------------------------------------
 class VTKPProbeFilter(Node, BVTK_Node):
@@ -1143,7 +1123,7 @@ class VTKPProbeFilter(Node, BVTK_Node):
     def m_properties( self ):
         return ['m_CategoricalData','m_ComputeTolerance','m_PassCellArrays','m_PassFieldArrays','m_PassPartialArrays','m_PassPointArrays','m_SpatialMatch','m_ValidPointMaskArrayName','m_Tolerance',]
     def m_connections( self ):
-        return (['input 0', 'input 1'], ['output'], ['CellLocatorPrototype', 'FindCellStrategy'], []) 
+        return (['input 0', 'input 1'], ['output'], [], []) 
     
 add_class( VTKPProbeFilter )        
 TYPENAMES.append('VTKPProbeFilterType' )
@@ -1347,7 +1327,7 @@ class VTKProbeFilter(Node, BVTK_Node):
     def m_properties( self ):
         return ['m_CategoricalData','m_ComputeTolerance','m_PassCellArrays','m_PassFieldArrays','m_PassPointArrays','m_SpatialMatch','m_ValidPointMaskArrayName','m_Tolerance',]
     def m_connections( self ):
-        return (['input 0', 'input 1'], ['output'], ['CellLocatorPrototype', 'FindCellStrategy'], []) 
+        return (['input 0', 'input 1'], ['output'], [], []) 
     
 add_class( VTKProbeFilter )        
 TYPENAMES.append('VTKProbeFilterType' )
@@ -1449,7 +1429,7 @@ class VTKResampleWithDataSet(Node, BVTK_Node):
     def m_properties( self ):
         return ['m_CategoricalData','m_ComputeTolerance','m_MarkBlankPointsAndCells','m_PassCellArrays','m_PassFieldArrays','m_PassPointArrays','m_Tolerance',]
     def m_connections( self ):
-        return (['input 0', 'input 1'], ['output'], ['CellLocatorPrototype'], []) 
+        return (['input 0', 'input 1'], ['output'], [], []) 
     
 add_class( VTKResampleWithDataSet )        
 TYPENAMES.append('VTKResampleWithDataSetType' )
@@ -1466,7 +1446,6 @@ class VTKSPHInterpolator(Node, BVTK_Node):
     m_PassFieldArrays         : bpy.props.BoolProperty  ( name='PassFieldArrays',          default=True )
     m_PassPointArrays         : bpy.props.BoolProperty  ( name='PassPointArrays',          default=True )
     m_PromoteOutputArrays     : bpy.props.BoolProperty  ( name='PromoteOutputArrays',      default=True )
-    m_ShepardNormalization    : bpy.props.BoolProperty  ( name='ShepardNormalization',     default=True )
     m_CutoffArrayName         : bpy.props.StringProperty( name='CutoffArrayName',          default="" )
     m_DensityArrayName        : bpy.props.StringProperty( name='DensityArrayName',         default="Rho" )
     m_MassArrayName           : bpy.props.StringProperty( name='MassArrayName',            default="" )
@@ -1475,10 +1454,10 @@ class VTKSPHInterpolator(Node, BVTK_Node):
     m_NullValue               : bpy.props.FloatProperty ( name='NullValue',                default=0.0 )
     e_NullPointsStrategy      : bpy.props.EnumProperty  ( name='NullPointsStrategy',       default="NullValue", items=e_NullPointsStrategy_items )
     
-    b_properties: bpy.props.BoolVectorProperty(name="", size=13, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+    b_properties: bpy.props.BoolVectorProperty(name="", size=12, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
     def m_properties( self ):
-        return ['m_ComputeShepardSum','m_PassCellArrays','m_PassFieldArrays','m_PassPointArrays','m_PromoteOutputArrays','m_ShepardNormalization','m_CutoffArrayName','m_DensityArrayName','m_MassArrayName','m_ShepardSumArrayName','m_ValidPointsMaskArrayName','m_NullValue','e_NullPointsStrategy',]
+        return ['m_ComputeShepardSum','m_PassCellArrays','m_PassFieldArrays','m_PassPointArrays','m_PromoteOutputArrays','m_CutoffArrayName','m_DensityArrayName','m_MassArrayName','m_ShepardSumArrayName','m_ValidPointsMaskArrayName','m_NullValue','e_NullPointsStrategy',]
     def m_connections( self ):
         return (['input 0', 'input 1'], ['output'], ['Kernel'], []) 
     
@@ -1493,7 +1472,7 @@ class VTKSelectEnclosedPoints(Node, BVTK_Node):
     
     m_CheckSurface: bpy.props.BoolProperty ( name='CheckSurface', default=True )
     m_InsideOut   : bpy.props.BoolProperty ( name='InsideOut',    default=True )
-    m_Tolerance   : bpy.props.FloatProperty( name='Tolerance',    default=0.0001 )
+    m_Tolerance   : bpy.props.FloatProperty( name='Tolerance',    default=0.001 )
     
     b_properties: bpy.props.BoolVectorProperty(name="", size=3, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
 
@@ -1702,29 +1681,6 @@ class VTKTensorGlyph(Node, BVTK_Node):
     
 add_class( VTKTensorGlyph )        
 TYPENAMES.append('VTKTensorGlyphType' )
-
-#--------------------------------------------------------------
-class VTKTrimmedExtrusionFilter(Node, BVTK_Node):
-
-    bl_idname = 'VTKTrimmedExtrusionFilterType'
-    bl_label  = 'vtkTrimmedExtrusionFilter'
-    e_CappingStrategy_items=[ (x,x,x) for x in ['Intersection', 'MinimumDistance', 'MaximumDistance', 'AverageDistance']]
-    e_ExtrusionStrategy_items=[ (x,x,x) for x in ['BoundaryEdges', 'AllEdges']]
-    
-    m_Capping           : bpy.props.BoolProperty       ( name='Capping',            default=True )
-    e_CappingStrategy   : bpy.props.EnumProperty       ( name='CappingStrategy',    default="MaximumDistance", items=e_CappingStrategy_items )
-    e_ExtrusionStrategy : bpy.props.EnumProperty       ( name='ExtrusionStrategy',  default="BoundaryEdges", items=e_ExtrusionStrategy_items )
-    m_ExtrusionDirection: bpy.props.FloatVectorProperty( name='ExtrusionDirection', default=[0.0, 0.0, 1.0], size=3 )
-    
-    b_properties: bpy.props.BoolVectorProperty(name="", size=4, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
-
-    def m_properties( self ):
-        return ['m_Capping','e_CappingStrategy','e_ExtrusionStrategy','m_ExtrusionDirection',]
-    def m_connections( self ):
-        return (['input 0', 'input 1'], ['output'], [], []) 
-    
-add_class( VTKTrimmedExtrusionFilter )        
-TYPENAMES.append('VTKTrimmedExtrusionFilterType' )
 
 #--------------------------------------------------------------
 class VTKVolumeContourSpectrumFilter(Node, BVTK_Node):

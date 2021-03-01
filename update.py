@@ -4,6 +4,7 @@ import vtk
 import bpy
 import os
 from .core import b_path
+from .errors.bvtk_errors import BVTKException
 
 # -----------------------------------------------------------------------------
 #  Functions and classes for running BVTK_Nodes internal function queue and
@@ -21,8 +22,17 @@ def UpdateObj(node, vtkobj):
     and call to VTK Update()
     '''
     #time.sleep(1)
-    node.apply_properties(vtkobj)
-    node.apply_inputs(vtkobj)
+    try:
+        node.apply_properties(vtkobj)
+        node.apply_inputs(vtkobj)
+    except AttributeError as err:
+        err_msg = ("Encountered an attribute error when trying to apply vtk properties.\n"
+                + "This may point to a VTK version mismatch between generated and currently used VTK.")
+        raise BVTKException(err_msg, err)
+    except Exception as ex:
+        err_msg = "Unknown error..."
+        raise BVTKException(err_msg, ex)
+    
     if hasattr(vtkobj, "Update"):
         vtkobj.Update()
 
@@ -158,22 +168,40 @@ class BVTK_OT_FunctionQueue(bpy.types.Operator):
 
     def modal(self, context, event):
         global queue
-        if not queue.running:
+        try:
+
+            if not queue.running:
+                self.cancel(context)
+                return {'CANCELLED'}
+            elif event.type == 'TIMER':
+                queue.next_function()
+            return {'PASS_THROUGH'}
+
+        except BVTKException as bvtk_ex:
+            err_str = "Queue execution (modal) failed with an unexpected error: \n" + str(bvtk_ex)
+            l.error(err_str)
+            self.report({'ERROR'}, err_str)
             self.cancel(context)
             return {'CANCELLED'}
-        elif event.type == 'TIMER':
-            queue.next_function()
-        return {'PASS_THROUGH'}
 
     def execute(self, context):
         global queue
-        if queue.running:
+        try:
+
+            if queue.running:
+                return {'CANCELLED'}
+            queue.running = True
+            wm = context.window_manager
+            self._timer = wm.event_timer_add(0.01, window=context.window)
+            wm.modal_handler_add(self)
+            return {'RUNNING_MODAL'}
+            
+        except BVTKException as bvtk_ex:
+            err_str = "Queue execution (modal) failed with an unexpected error: \n" + str(bvtk_ex)
+            l.error(err_str)
+            self.report({'ERROR'}, err_str)
+            self.cancel(context)
             return {'CANCELLED'}
-        queue.running = True
-        wm = context.window_manager
-        self._timer = wm.event_timer_add(0.01, window=context.window)
-        wm.modal_handler_add(self)
-        return {'RUNNING_MODAL'}
 
     def cancel(self, context):
         global queue
