@@ -1,3 +1,3 @@
-from .gen_VTKReaders import *
+from ..generated_nodes.gen_VTKReaders import *
     
     

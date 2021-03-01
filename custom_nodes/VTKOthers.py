@@ -1,10 +1,10 @@
-from .gen_VTKTransform import *
-from .gen_VTKImplicitFunc import *
-from .gen_VTKParametricFunc import *
-from .gen_VTKIntegrator import *
+from ..generated_nodes.gen_VTKTransform import *
+from ..generated_nodes.gen_VTKImplicitFunc import *
+from ..generated_nodes.gen_VTKParametricFunc import *
+from ..generated_nodes.gen_VTKIntegrator import *
 import mathutils
 import math
-from .core import show_custom_code, run_custom_code
+from ..core import show_custom_code, run_custom_code
 
 # --------------------------------------------------------------
 # ImplicitFunctions base class

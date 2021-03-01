@@ -1,3 +1,3 @@
-from .gen_VTKWriters import *
+from ..generated_nodes.gen_VTKWriters import *
 
 

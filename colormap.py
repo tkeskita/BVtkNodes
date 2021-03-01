@@ -224,7 +224,7 @@ class BVTK_Node_ColorRamp(Node, BVTK_Node):
         #self.cm_nr_values_ = value
         #return value
 
-    cm_preset_items = [ (x,x,x) for x in ['viridis', 'jet', 'coolwarm', 'custom']]
+    cm_preset_items = [ (x,x,x) for x in ['custom'] + sorted(list(colormaps_rgb.keys()))] #['viridis', 'jet', 'coolwarm', 'custom']]
     cm_preset:   bpy.props.EnumProperty   (name='Preset', default='custom', items=cm_preset_items, update=update_colorbar_preset) #, set=update_colorbar_preset)
     cm_nr_values: bpy.props.IntProperty(name='Nr Color values', default=8, max=32, min=2, update=update_colorbar_nr) #, get=get_cm_nr_values)
     b_properties: bpy.props.BoolVectorProperty(name="", size=32, get=BVTK_Node.get_b, set=BVTK_Node.set_b)

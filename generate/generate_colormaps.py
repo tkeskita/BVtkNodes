@@ -51,7 +51,7 @@ if __name__ == "__main__":
         for single_map in val:
             cmap = plt.cm.get_cmap(single_map)
 
-            colors = cmap(np.linspace(0, 1, num=256))
+            colors = cmap(np.linspace(0, 1, num=64))
             assert(np.allclose(colors[..., -1], 1.)) #Check that alpha channel is 1 and remove it
             colors = colors[..., :-1]
             all_cmaps_rgb[single_map] = colors.tolist()

@@ -1,2 +1,2 @@
-from .gen_VTKSources import *
+from ..generated_nodes.gen_VTKSources import *
     

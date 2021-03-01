@@ -1,7 +1,7 @@
-from .gen_VTKFilters1 import *
-from .gen_VTKFilters2 import *
-from .gen_VTKFilters  import *
-from .core import show_custom_code, run_custom_code
+from ..generated_nodes.gen_VTKFilters1 import *
+from ..generated_nodes.gen_VTKFilters2 import *
+from ..generated_nodes.gen_VTKFilters  import *
+from ..core import show_custom_code, run_custom_code
 
 class BVTK_PG_ValueSettings(bpy.types.PropertyGroup):
     '''Property Group for float array of variable size'''

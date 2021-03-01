@@ -1,5 +1,5 @@
-from .core import l # Import logging
-from .core import *
+from ...core import l # Import logging
+from ...core import *
 
 class BVTK_Node_Info(Node, BVTK_Node):
     '''BVTK Info Node'''
@@ -70,7 +70,7 @@ class BVTK_Node_Info(Node, BVTK_Node):
                         r = arr.GetRange(n)
                         range_text += '[' + fs.format(r[0]) +', ' + fs.format(r[1]) + ']  '
                     row = layout.row()
-                    row.label(text = arr_string.format(k, i, data_type_name, n_comps, name, range_text))
+                    row.label(text = self.arr_string.format(k=k, i=i, data_type_name=data_type_name, n_comps=n_comps, name=name, range_text=range_text))
 
         layout.separator()
         row = layout.row()
