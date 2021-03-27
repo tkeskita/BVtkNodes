@@ -81,7 +81,7 @@ if need_reloading:
     importlib.reload(colormap)
     importlib.reload(customfilter)
     importlib.reload(info)
-    importlib.reload(favorites_data)
+    # importlib.reload(favorites_data)
     importlib.reload(favorites)
     importlib.reload(converters)
 
