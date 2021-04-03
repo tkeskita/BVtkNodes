@@ -516,37 +516,45 @@ class BVTK_Node_GlobalTimeKeeper(PersistentStorageUser, AnimationHelper, Node, B
 # ----------------------------------------------------------------
 # vtkDataSetAttributes 
 # ----------------------------------------------------------------
-class BVTK_DataArrayPropertyGroup(bpy.types.PropertyGroup):
-    bl_idname = "BVTK_DataArrayPropertyGroup"
+
+class BVTK_Bprop_DataArrayPropertyGroup(bpy.types.PropertyGroup):
+    bl_idname = "BVTK_Bprop_DataArrayPropertyGroupType"
+
     name: bpy.props.StringProperty(name="Property Name", default="0_array", description="ID name of vtk data array")
     field_name: bpy.props.StringProperty(name="Array Name", default="", description="Name of vtk data array")
     desc: bpy.props.StringProperty(name="Property Desc", default="", description="Name of vtk data array")
-    export_set: bpy.props.BoolProperty(name="export_set", default = True)
-    export_active: bpy.props.BoolProperty(name="export_active", default = False)
 
-class BVTK_Node_vtkDataSetAttributesFilter(Node, BVTK_Node):
+    def update_active(self, context):
+        if self.export_active:
+            self.updated = True
+
+    export_active: bpy.props.BoolProperty(name="export_active", default=False, update=update_active)
+    updated: bpy.props.BoolProperty(name="updated", default=False, description="Hidden prop used for imposing single selection of export_active props")
+
+class BVTK_Node_BVTKSetActiveAttribute(Node, BVTK_Node):
     """
     Custom node for setting arrays to specific point or cell data fields.
     https://vtk.org/doc/nightly/html/classvtkDataSetAttributes.html
     https://vtk.org/Wiki/VTK/Tutorials/DataStorage
     """
-    bl_idname = 'BVTK_Node_vtkDataSetAttributesFilterType'
-    bl_label = 'bvtkDataSetAttributes '
+    bl_idname = 'BVTK_Node_BVTKSetActiveAttributeType'
+    bl_label = 'bvtkSetActiveAttribute'
+
+    
     # Here we use a prop collection
     # to dynamically add properties depending on the attribute type
     # See: https://blender.stackexchange.com/a/1786
-    array_collection_prop: bpy.props.CollectionProperty(name="Arrays", type=BVTK_DataArrayPropertyGroup, description="Select data arrays to set")
+    array_collection_prop: bpy.props.CollectionProperty(name="Arrays", type=BVTK_Bprop_DataArrayPropertyGroup, description="Select data arrays to set")
     
     # Number of components each attribute array should have (-1 means unknown/any)
     # TODO: Reconfirm this in vtk source
-    attrib_component_map = {'Scalars': 1, 'Vectors': 3, 'Normals': 3, 'Tangets': 3, 'TCoords': 3, 'Tensors': 9, \
-            'GlobalIds': 1, 'PedigreeIds': 1, 'RationalWeights': -1, 'HigherOrderDegrees': -1}
+    attrib_component_map = {'Scalars': 1, 'Vectors': 3, 'Normals': 3, 'TCoords': 3, 'Tensors': 9, \
+            'GlobalIds': 1, 'PedigreeIds': 1, 'Tangents': 3, 'RationalWeights': -1, 'HigherOrderDegrees': -1}
 
     def attribute_arrays(self, context):
         '''Generate array of possible attributes to set an array to
         '''
-        vtk_attributes = ['Scalars', 'Vectors', 'Normals', 'Tangets', 'TCoords', 'Tensors', \
-            'GlobalIds', 'PedigreeIds', 'RationalWeights', 'HigherOrderDegrees']
+        vtk_attributes = self.attrib_component_map.keys()
         vtk_field_types = ['Point', 'Cell']
         array_icons = {"Point": 'VERTEXSEL', 'Cell': 'FACESEL'}
         
@@ -582,6 +590,19 @@ class BVTK_Node_vtkDataSetAttributesFilter(Node, BVTK_Node):
             else:
                 l.error("bad attribute field type")
 
+            # Get current active attribute if exists
+            # exec() does not operate with locals(), need explicit dict
+            _locals = locals()
+            cmd = "active_data = array_data.Get"+data_attribute[1]+"()"
+            exec(cmd, globals(), _locals)
+            active_data = _locals['active_data']
+            if active_data:
+                active_field = active_data.GetName()
+            else:
+                active_field = None
+            
+            # Loop through data arrays for point/cell field
+            attrib_dim = self.attrib_component_map[data_attribute[1]]
             narray = array_data.GetNumberOfArrays()
             for i in range(narray):
                 data_array = array_data.GetArray(i)
@@ -589,7 +610,8 @@ class BVTK_Node_vtkDataSetAttributesFilter(Node, BVTK_Node):
                 array_name = data_array.GetName()
                 array_dim = data_array.GetNumberOfComponents()
 
-                if self.attrib_component_map[data_attribute[1]] == array_dim or self.attrib_component_map[data_attribute[1]] < 0:
+                # Verify array dimensions agree with attribute dimensions
+                if attrib_dim == array_dim or attrib_dim < 0:
                     prop_name = '_'.join([str(len(self.array_collection_prop)), str(array_name)])
                     fields_map = {"P": "Point", "C": "Cell"}
                     prop_desc = ' '.join([fields_map[data_attribute[0]], 'data [{:d}]:'.format(len(self.array_collection_prop)), str(array_name)])
@@ -597,7 +619,11 @@ class BVTK_Node_vtkDataSetAttributesFilter(Node, BVTK_Node):
                     # Add prop instance to collection representing array
                     self.array_collection_prop.add().name = prop_name
                     self.array_collection_prop[-1].desc = prop_desc
-                    self.array_collection_prop[-1].field_name = str(array_name)
+                    self.array_collection_prop[-1].field_name = array_name
+
+                    # If this array is already active, check it!
+                    if active_field and array_name == active_field:
+                        self.array_collection_prop[-1].export_active = True
 
     data_attribute: bpy.props.EnumProperty(items=attribute_arrays, name="Data attribute", update=attribute_change)
 
@@ -607,17 +633,35 @@ class BVTK_Node_vtkDataSetAttributesFilter(Node, BVTK_Node):
     def m_connections(self):
         return (['input'], ['output'], [], [])
 
-    def eval_point_arrays(self, vtkobj):
-     
-        if not hasattr(vtkobj, 'GetPointData'):
-            return []
+    # def update_radio_buttons(self, context):
+    #     updated_button = None
+    #     for aindx in range(len(self.array_collection_prop)):
+    #         if self.array_collection_prop[aindx].updated:
+    #             updated_button = aindx
+    #         self.array_collection_prop[aindx].updated = False
 
-        point_data = vtkobj.GetPointData()
-        narray = point_data.GetNumberOfArrays()
-        for i in range(narray):
-            data_array = point_data.GetArray(i)
-            array_type = data_array.GetDataType()
-            array_name = data_array.GetName()
+    #     if updated_button is None:
+    #         return
+
+    #     for aindx in range(len(self.array_collection_prop)):
+    #         if not aindx == updated_button:
+    #             self.array_collection_prop[aindx].export_active = False
+
+    def apply_properties(self, vtkobj):
+        '''Sets properties from node to vtkobj based on property name'''
+
+        data_attribute = self.data_attribute.split('_')
+
+        if data_attribute[0] == 'P':
+            vtkobj.SetFieldType('Point')
+        elif data_attribute[0] == 'C':
+            vtkobj.SetFieldType('Field')
+
+        vtkobj.SetAttributeType(data_attribute[1])
+
+        for aindx in range(len(self.array_collection_prop)):
+            if self.array_collection_prop[aindx].export_active:
+                vtkobj.SetArrayName(self.array_collection_prop[aindx].field_name)
 
     def draw_buttons(self, context, layout):
         '''Draw node'''
@@ -635,62 +679,23 @@ class BVTK_Node_vtkDataSetAttributesFilter(Node, BVTK_Node):
                 layout.prop(self, m_properties[0])
 
                 if len(self.array_collection_prop) > 0:
+
+                    # self.update_radio_buttons(context)
+
                     box = layout.box()
                     col = box.column()
-                    title_size = 0.6
+                    title_size = 0.8
                     # Labels
                     row = col.split(factor=title_size, align=True)
                     row.label(text="Field")
-                    row.label(text="Set")
                     row.label(text="Active")
-
+                    # Add data arrays
                     for aindx in range(len(self.array_collection_prop)):
                         row = col.split(factor=title_size, align=True)
                         row.label(text=self.array_collection_prop[aindx].desc)
-                        row.prop(self.array_collection_prop[aindx], "export_set", text="")
                         row.prop(self.array_collection_prop[aindx], "export_active", text="")
                 else:
                     layout.label(text='No data arrays with right dimensions')
-
-    def get_output(self, socketname):
-        
-        # in_node, vtkobj = self.get_input_node('input')
-        # if not in_node or not vtkobj:
-        #     return None
-        
-        # vtkobj = resolve_algorithm_output(vtkobj)
-        # if not vtkobj:
-        #     return None
-
-        # data_attribute = self.data_attribute.split('_')
-        # # Point Data
-        # # TODO: Move this into an update function, somehow set up a vtkobj in cache for this maybe, idk
-        # if data_attribute[0] == 'P':
-        #     if not hasattr(vtkobj, 'GetPointData'): 
-        #         return
-        #     array_data = vtkobj.GetPointData()
-        # elif data_attribute[0] == 'C':
-        #     if not hasattr(vtkobj, 'GetCellData'): 
-        #         return
-        #     array_data = vtkobj.GetCellData()
-
-        # set_arrays = []
-        # active_arrays = []
-        # for aindx in range(len(self.array_collection_prop)):
-        #     if self.array_collection_prop[aindx].export_set:
-        #         set_arrays.append( self.array_collection_prop[aindx].field_name )
-
-        #         array = array_data.GetArray(self.array_collection_prop[aindx].field_name)
-        #         cmd = 'array_data.Set' + data_attribute[1] + '( array )'
-        #         exec(cmd)
-
-        #     if self.array_collection_prop[aindx].export_active:
-        #         active_arrays.append( self.array_collection_prop[aindx].field_name )
-        #         cmd = 'array_data.SetActive' + data_attribute[1] + '("'+ self.array_collection_prop[aindx].field_name +'")'
-        #         exec(cmd)
-        #         print(cmd, vtkobj)
-        
-        return self.get_input_node('input')[1]
 
 
 # Add classes and menu items
@@ -706,9 +711,10 @@ add_class(BVTK_Node_GlobalTimeKeeper)
 TYPENAMES.append('BVTK_Node_GlobalTimeKeeperType')
 add_class(BVTK_Node_ImageDataObjectSource)
 TYPENAMES.append('BVTK_Node_ImageDataObjectSourceType')
-add_class(BVTK_DataArrayPropertyGroup)
-add_class(BVTK_Node_vtkDataSetAttributesFilter)
-TYPENAMES.append('BVTK_Node_vtkDataSetAttributesFilterType')
+add_class(BVTK_Bprop_DataArrayPropertyGroup)
+TYPENAMES.append('BVTK_Bprop_DataArrayPropertyGroupType')
+add_class(BVTK_Node_BVTKSetActiveAttribute)
+TYPENAMES.append('BVTK_Node_BVTKSetActiveAttributeType')
 
 menu_items = [NodeItem(x) for x in TYPENAMES]
 CATEGORIES.append(BVTK_NodeCategory("Custom", "Custom", items=menu_items))

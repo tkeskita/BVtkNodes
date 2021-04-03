@@ -325,6 +325,7 @@ def register():
             bpy.utils.register_class(c)
         except:
             l.critical('error registering ' + str(c))
+    # TODO: May register priority queue
     for c in sorted(core.CLASSES.keys()):
         try:
             bpy.utils.register_class(core.CLASSES[c])
