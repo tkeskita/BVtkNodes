@@ -520,6 +520,39 @@ class BVTK_Node_GlobalTimeKeeper(PersistentStorageUser, AnimationHelper, Node, B
 # Cache used for storing prop groups to enforce radio buttons
 group_cache = { }
 
+class BVTK_OT_SetActiveAttributeRefresh(bpy.types.Operator):
+    '''BVTK Set Active Attribe Refresh Operator'''
+    bl_idname = "node.bvtk_set_active_attrib"
+    bl_label = "Set Active Attribe Refresh Operator"
+
+    _timer = None
+    node_name: bpy.props.StringProperty()
+    tree_name: bpy.props.StringProperty()
+
+    def get_input(self, node):
+        
+        links = {}
+        for input in node.inputs:
+            links[input.name] = ''
+            for link in input.links:
+                links[input.name] = link.from_node.name
+        
+        return links
+
+    def execute(self, context):
+        self.tree = bpy.data.node_groups[self.tree_name].nodes
+        self.node = bpy.data.node_groups[self.tree_name].nodes[self.node_name]
+        current_input = self.get_input(self.node)
+
+        if not hasattr(self, "prev_input_"):
+            self.prev_input_ = current_input
+            self.node.attribute_change(context)
+        elif not self.prev_input_['input'] == current_input['input']:
+            self.prev_input_ = current_input
+            self.node.attribute_change(context)
+            
+        return {'FINISHED'}
+
 class BVTK_Bprop_DataArrayPropertyGroup(bpy.types.PropertyGroup):
     bl_idname = "BVTK_Bprop_DataArrayPropertyGroupType"
 
@@ -558,6 +591,7 @@ class BVTK_Node_BVTKSetActiveAttribute(Node, BVTK_Node):
     # to dynamically add properties depending on the attribute type
     # See: https://blender.stackexchange.com/a/1786
     array_collection_prop: bpy.props.CollectionProperty(name="Arrays", type=BVTK_Bprop_DataArrayPropertyGroup, description="Select data arrays to set")
+    modular_prop: bpy.props.BoolProperty(name="modular active", default=False)
 
     # Number of components each attribute array should have (-1 means unknown/any)
     # TODO: Reconfirm this in vtk source
@@ -575,7 +609,7 @@ class BVTK_Node_BVTKSetActiveAttribute(Node, BVTK_Node):
         for field in vtk_field_types:
             for attribute in vtk_attributes:
                 p_descr = ' '.join([field, 'data', attribute.lower(), 'attribute'])
-                items.append(('_'.join([field[0], attribute]), attribute, p_descr, array_icons[field], len(items)))
+                items.append(('_'.join([field[0], attribute]), attribute, p_descr, array_icons[field], len(items))) 
 
         return items
 
@@ -646,6 +680,10 @@ class BVTK_Node_BVTKSetActiveAttribute(Node, BVTK_Node):
 
     data_attribute: bpy.props.EnumProperty(items=attribute_arrays, name="Data attribute", update=attribute_change)
 
+    def update(self):
+        # Make info node wider to show all text
+        self.width = 300
+
     def m_properties(self):
         return ['data_attribute']
 
@@ -691,8 +729,10 @@ class BVTK_Node_BVTKSetActiveAttribute(Node, BVTK_Node):
 
     def draw_buttons(self, context, layout):
         '''Draw node'''
+        global reload_check
         in_node, vtkobj = self.get_input_node('input')
         if not in_node:
+            reload_check = False
             layout.label(text='Connect a node')
         elif not vtkobj:
             layout.label(text='Input has no vtkobj (try updating)')
@@ -723,6 +763,12 @@ class BVTK_Node_BVTKSetActiveAttribute(Node, BVTK_Node):
                 else:
                     layout.label(text='No data arrays with right dimensions')
 
+                row = layout.row()
+                # Refresh the list button
+                op = row.operator("node.bvtk_set_active_attrib", text="refresh")
+                op.node_name=self.name
+                op.tree_name=context.space_data.node_tree.name
+
 
 # Add classes and menu items
 TYPENAMES = []
@@ -741,6 +787,8 @@ add_class(BVTK_Bprop_DataArrayPropertyGroup)
 TYPENAMES.append('BVTK_Bprop_DataArrayPropertyGroupType')
 add_class(BVTK_Node_BVTKSetActiveAttribute)
 TYPENAMES.append('BVTK_Node_BVTKSetActiveAttributeType')
+
+add_ui_class(BVTK_OT_SetActiveAttributeRefresh)
 
 menu_items = [NodeItem(x) for x in TYPENAMES]
 CATEGORIES.append(BVTK_NodeCategory("Custom", "Custom", items=menu_items))
