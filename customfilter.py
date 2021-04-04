@@ -521,9 +521,9 @@ class BVTK_Node_GlobalTimeKeeper(PersistentStorageUser, AnimationHelper, Node, B
 group_cache = { }
 
 class BVTK_OT_SetActiveAttributeRefresh(bpy.types.Operator):
-    '''BVTK Set Active Attribe Refresh Operator'''
+    '''BVTK Set Active Attrib Refresh Operator'''
     bl_idname = "node.bvtk_set_active_attrib"
-    bl_label = "Set Active Attribe Refresh Operator"
+    bl_label = "Set Active Attrib Refresh Operator"
 
     _timer = None
     node_name: bpy.props.StringProperty()
@@ -717,15 +717,13 @@ class BVTK_Node_BVTKSetActiveAttribute(Node, BVTK_Node):
             vtkobj.SetFieldType('Cell')
 
         vtkobj.SetAttributeType(data_attribute[1])
+
+        vtkobj.SetArrayName(None)
         # Loop through arrays for find which is to be set active
         for aindx in range(len(self.array_collection_prop)):
             if self.array_collection_prop[aindx].export_active:
                 vtkobj.SetArrayName(self.array_collection_prop[aindx].field_name)
                 break
-            # If none of the props are active, set the array name to None
-            # This will prevent the algorithm from doing anything
-            if aindx == len(self.array_collection_prop) - 1:
-                vtkobj.SetArrayName(None)
 
     def draw_buttons(self, context, layout):
         '''Draw node'''
