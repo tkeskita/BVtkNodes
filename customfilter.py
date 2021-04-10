@@ -1,3 +1,4 @@
+import random
 from .core import l # Import logging
 from .core import *
 from .animation_helper import AnimationHelper
@@ -513,6 +514,258 @@ class BVTK_Node_GlobalTimeKeeper(PersistentStorageUser, AnimationHelper, Node, B
         self.setup()
 
 
+# ----------------------------------------------------------------
+# vtkDataSetAttributes 
+# ----------------------------------------------------------------
+# Cache used for storing prop groups to enforce radio buttons
+group_cache = { }
+
+class BVTK_OT_SetActiveAttributeRefresh(bpy.types.Operator):
+    '''BVTK Set Active Attrib Refresh Operator'''
+    bl_idname = "node.bvtk_set_active_attrib"
+    bl_label = "Set Active Attrib Refresh Operator"
+
+    _timer = None
+    node_name: bpy.props.StringProperty()
+    tree_name: bpy.props.StringProperty()
+
+    def get_input(self, node):
+        
+        links = {}
+        for input in node.inputs:
+            links[input.name] = ''
+            for link in input.links:
+                links[input.name] = link.from_node.name
+        
+        return links
+
+    def execute(self, context):
+        self.tree = bpy.data.node_groups[self.tree_name].nodes
+        self.node = bpy.data.node_groups[self.tree_name].nodes[self.node_name]
+        current_input = self.get_input(self.node)
+
+        if not hasattr(self, "prev_input_"):
+            self.prev_input_ = current_input
+            self.node.attribute_change(context)
+        elif not self.prev_input_['input'] == current_input['input']:
+            self.prev_input_ = current_input
+            self.node.attribute_change(context)
+            
+        return {'FINISHED'}
+
+class BVTK_Bprop_DataArrayPropertyGroup(bpy.types.PropertyGroup):
+    bl_idname = "BVTK_Bprop_DataArrayPropertyGroupType"
+
+    name: bpy.props.StringProperty(name="Property Name", default="0_array", description="ID name of vtk data array")
+    field_name: bpy.props.StringProperty(name="Array Name", default="", description="Name of vtk data array")
+    desc: bpy.props.StringProperty(name="Property Desc", default="", description="Name of vtk data array")
+    cache_id: bpy.props.IntProperty(default=0)
+
+    def update_active(self, context):
+        """
+        Update imposes radio buttons constrant, if node gets updated
+        it will access the cache
+        """
+        if not self.cache_id in group_cache.keys():
+            l.warn("Missing node key in group cache")
+            return
+        # Set other radio bools to False
+        if self.export_active == True:
+            data_array_group = group_cache[self.cache_id]
+            for aindx in range(len(data_array_group)):
+                if not data_array_group[aindx].name == self.name:
+                    data_array_group[aindx].export_active = False
+
+    export_active: bpy.props.BoolProperty(name="export_active", default=False, update=update_active)
+
+class BVTK_Node_BVTKSetActiveAttribute(Node, BVTK_Node):
+    """
+    Custom node for setting arrays to specific point or cell data fields.
+    https://vtk.org/doc/nightly/html/classvtkDataSetAttributes.html
+    https://vtk.org/Wiki/VTK/Tutorials/DataStorage
+    """
+    bl_idname = 'BVTK_Node_BVTKSetActiveAttributeType'
+    bl_label = 'bvtkSetActiveAttribute'
+
+    # Here we use a prop collection
+    # to dynamically add properties depending on the attribute type
+    # See: https://blender.stackexchange.com/a/1786
+    array_collection_prop: bpy.props.CollectionProperty(name="Arrays", type=BVTK_Bprop_DataArrayPropertyGroup, description="Select data arrays to set")
+    modular_prop: bpy.props.BoolProperty(name="modular active", default=False)
+
+    # Number of components each attribute array should have (-1 means unknown/any)
+    # TODO: Reconfirm this in vtk source
+    attrib_component_map = {'Scalars': 1, 'Vectors': 3, 'Normals': 3, 'TCoords': 3, 'Tensors': 9, \
+            'GlobalIds': 1, 'PedigreeIds': 1, 'Tangents': 3, 'RationalWeights': -1, 'HigherOrderDegrees': -1}
+
+    def attribute_arrays(self, context):
+        '''Generate array of possible attributes to set an array to
+        '''
+        vtk_attributes = self.attrib_component_map.keys()
+        vtk_field_types = ['Point', 'Cell']
+        array_icons = {"Point": 'VERTEXSEL', 'Cell': 'FACESEL'}
+        
+        items = []
+        for field in vtk_field_types:
+            for attribute in vtk_attributes:
+                p_descr = ' '.join([field, 'data', attribute.lower(), 'attribute'])
+                items.append(('_'.join([field[0], attribute]), attribute, p_descr, array_icons[field], len(items))) 
+
+        return items
+
+    def attribute_change(self, context):
+        '''Update array selections based on attribute selected
+        '''
+        # Remove old group from cache
+        self.delete_group_cache()
+        # Clear collection
+        # Not in blender docs: https://blender.stackexchange.com/a/19687
+        self.array_collection_prop.clear()
+
+        in_node, vtkobj = self.get_input_node('input')
+        if not vtkobj is None:
+            vtkobj = resolve_algorithm_output(vtkobj)
+            
+            data_attribute = self.data_attribute.split('_')
+            # Point Data
+            if data_attribute[0] == 'P':
+                if not hasattr(vtkobj, 'GetPointData'): 
+                    return
+                array_data = vtkobj.GetPointData()
+            elif data_attribute[0] == 'C':
+                if not hasattr(vtkobj, 'GetCellData'): 
+                    return
+                array_data = vtkobj.GetCellData()
+            else:
+                l.error("bad attribute field type")
+
+            # Get current active attribute if exists
+            # exec() does not operate with locals(), need explicit dict
+            _locals = locals()
+            cmd = "active_data = array_data.Get"+data_attribute[1]+"()"
+            exec(cmd, globals(), _locals)
+            active_data = _locals['active_data']
+            if active_data:
+                active_field = active_data.GetName()
+            else:
+                active_field = None
+            
+            # Loop through data arrays for point/cell field
+            cache_id = random.randint(0, 1e5) # Cache ID is a random number, allows for cache to work on reload
+            attrib_dim = self.attrib_component_map[data_attribute[1]]
+            narray = array_data.GetNumberOfArrays()
+            for i in range(narray):
+                data_array = array_data.GetArray(i)
+                array_type = data_array.GetDataType()
+                array_name = data_array.GetName()
+                array_dim = data_array.GetNumberOfComponents()
+
+                # Verify array dimensions agree with attribute dimensions
+                if attrib_dim == array_dim or attrib_dim < 0:
+                    prop_name = '_'.join([str(len(self.array_collection_prop)), str(array_name)])
+                    fields_map = {"P": "Point", "C": "Cell"}
+                    prop_desc = ' '.join([fields_map[data_attribute[0]], 'data [{:d}]:'.format(len(self.array_collection_prop)), str(array_name)])
+                    
+                    # Add prop instance to collection representing array
+                    self.array_collection_prop.add().name = prop_name
+                    self.array_collection_prop[-1].desc = prop_desc
+                    self.array_collection_prop[-1].field_name = array_name
+                    self.array_collection_prop[-1].cache_id = cache_id
+
+                    # If this array is already active, check it!
+                    if active_field and array_name == active_field:
+                        # Temp update cache
+                        self.update_group_cache()
+                        self.array_collection_prop[-1].export_active = True
+
+    data_attribute: bpy.props.EnumProperty(items=attribute_arrays, name="Data attribute", update=attribute_change)
+
+    def update(self):
+        # Make info node wider to show all text
+        self.width = 300
+
+    def m_properties(self):
+        return ['data_attribute']
+
+    def m_connections(self):
+        return (['input'], ['output'], [], [])
+
+    def delete_group_cache(self):
+        if len(self.array_collection_prop) > 0:
+            cache_id = self.array_collection_prop[0].cache_id
+            if cache_id in group_cache.keys():
+                del group_cache[cache_id]
+
+    def update_group_cache(self):
+        if len(self.array_collection_prop) > 0:
+            cache_id = self.array_collection_prop[0].cache_id
+            group_cache[cache_id] = self.array_collection_prop
+
+    def free(self):
+        '''Clean up node on removal
+        '''
+        self.delete_group_cache()
+        BVTKCache.unmap_node(self)
+
+    def apply_properties(self, vtkobj):
+        '''Sets properties from node to vtkobj based on property name'''
+        data_attribute = self.data_attribute.split('_')
+
+        if data_attribute[0] == 'P':
+            vtkobj.SetFieldType('Point')
+        elif data_attribute[0] == 'C':
+            vtkobj.SetFieldType('Cell')
+
+        vtkobj.SetAttributeType(data_attribute[1])
+
+        vtkobj.SetArrayName(None)
+        # Loop through arrays for find which is to be set active
+        for aindx in range(len(self.array_collection_prop)):
+            if self.array_collection_prop[aindx].export_active:
+                vtkobj.SetArrayName(self.array_collection_prop[aindx].field_name)
+                break
+
+    def draw_buttons(self, context, layout):
+        '''Draw node'''
+        global reload_check
+        in_node, vtkobj = self.get_input_node('input')
+        if not in_node:
+            reload_check = False
+            layout.label(text='Connect a node')
+        elif not vtkobj:
+            layout.label(text='Input has no vtkobj (try updating)')
+        else:
+            vtkobj = resolve_algorithm_output(vtkobj)
+            if not vtkobj:
+                layout.label(text='Failed to resolve algorithm ouput (try updating)')
+            else:
+                # Update collection cache for radio buttons
+                self.update_group_cache()
+
+                m_properties = self.m_properties()
+                layout.prop(self, m_properties[0])
+
+                if len(self.array_collection_prop) > 0:
+                    box = layout.box()
+                    col = box.column()
+                    title_size = 0.8
+                    # Labels
+                    row = col.split(factor=title_size, align=True)
+                    row.label(text="Field")
+                    row.label(text="Active")
+                    # Add data arrays
+                    for aindx in range(len(self.array_collection_prop)):
+                        row = col.split(factor=title_size, align=True)
+                        row.label(text=self.array_collection_prop[aindx].desc)
+                        row.prop(self.array_collection_prop[aindx], "export_active", text="")
+                else:
+                    layout.label(text='No data arrays with right dimensions')
+
+                row = layout.row()
+                # Refresh the list button
+                op = row.operator("node.bvtk_set_active_attrib", text="refresh")
+                op.node_name=self.name
+                op.tree_name=context.space_data.node_tree.name
 
 
 # Add classes and menu items
@@ -528,6 +781,12 @@ add_class(BVTK_Node_GlobalTimeKeeper)
 TYPENAMES.append('BVTK_Node_GlobalTimeKeeperType')
 add_class(BVTK_Node_ImageDataObjectSource)
 TYPENAMES.append('BVTK_Node_ImageDataObjectSourceType')
+add_class(BVTK_Bprop_DataArrayPropertyGroup)
+TYPENAMES.append('BVTK_Bprop_DataArrayPropertyGroupType')
+add_class(BVTK_Node_BVTKSetActiveAttribute)
+TYPENAMES.append('BVTK_Node_BVTKSetActiveAttributeType')
+
+add_ui_class(BVTK_OT_SetActiveAttributeRefresh)
 
 menu_items = [NodeItem(x) for x in TYPENAMES]
 CATEGORIES.append(BVTK_NodeCategory("Custom", "Custom", items=menu_items))

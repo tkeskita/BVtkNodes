@@ -2,6 +2,7 @@ import logging
 import bpy
 import vtk
 import functools
+from . import bvtk
 
 l = logging.getLogger(__name__)
 
@@ -89,7 +90,7 @@ class BVTKCache:
         '''Instantiate the nodes vtkobj and store it in VTKCache.
         '''
         global vtkCache
-        
+
         # create the node vtk_obj if needed
         if node.bl_label.startswith('vtk'):
             vtk_class = getattr(vtk, node.bl_label, None)
@@ -98,6 +99,13 @@ class BVTKCache:
                 return
             vtkCache[node.node_id] = vtk_class()
             l.debug("Created VTK object of type " + node.bl_label + ", id " + str(node.node_id))
+        elif node.bl_label.startswith('bvtk'):
+            vtk_class = getattr(bvtk, node.bl_label, None)
+            if vtk_class is None:
+                l.error("bad classname " + node.bl_label)
+                return
+            vtkCache[node.node_id] = vtk_class()
+            l.debug("Created BVTK object of type " + node.bl_label + ", id " + str(node.node_id))
         else:
             vtkCache[node.node_id] = None
 

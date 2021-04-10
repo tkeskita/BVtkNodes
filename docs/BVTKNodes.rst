@@ -625,6 +625,16 @@ of type *vtkMultiBlockDataSet*. This is often required prior to
 processing of a specific array data when a VTK Reader provides
 multi block data.
 
+bvtkSetActiveAttribute
+^^^^^^^^^^^^^^^^
+
+This node allows you to set active attributes of VTK data sets to specific
+data arrays.
+
+- **Data attribute** selects the point or cell data attribute to modify
+- **Arrays** selects the data array that is to be set active
+- **Refresh** will refresh the array list, should be used if input connection changes
+
 Time Selector
 ^^^^^^^^^^^^^
 

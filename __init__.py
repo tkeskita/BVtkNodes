@@ -81,7 +81,7 @@ if need_reloading:
     importlib.reload(colormap)
     importlib.reload(customfilter)
     importlib.reload(info)
-    importlib.reload(favorites_data)
+    # importlib.reload(favorites_data)
     importlib.reload(favorites)
     importlib.reload(converters)
 
@@ -325,6 +325,7 @@ def register():
             bpy.utils.register_class(c)
         except:
             l.critical('error registering ' + str(c))
+    # TODO: May register priority queue
     for c in sorted(core.CLASSES.keys()):
         try:
             bpy.utils.register_class(core.CLASSES[c])
