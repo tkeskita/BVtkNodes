@@ -255,9 +255,6 @@ def on_frame_change(scene, depsgraph):
             l.error(err_str)
 
 
-
-
-
 @persistent
 def on_depsgraph_update(scene, depsgraph):
     '''Updates done after depsgraph changes'''

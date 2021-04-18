@@ -2,6 +2,8 @@ from ..generated_nodes.gen_VTKFilters1 import *
 from ..generated_nodes.gen_VTKFilters2 import *
 from ..generated_nodes.gen_VTKFilters  import *
 from ..core import show_custom_code, run_custom_code
+from ..cache import BVTKCache
+import time
 
 class BVTK_PG_ValueSettings(bpy.types.PropertyGroup):
     '''Property Group for float array of variable size'''
@@ -304,8 +306,153 @@ class VTKTransformFilter(Node, BVTK_Node):
 
         vtkobj.SetTransform(self.vtk_transform)
 
-
 add_class(VTKTransformFilter)
 TYPENAMES.append('VTKTransformFilterType')
 
 
+#--------------------------------------------------------------
+class BVTK_Bprop_SetAttribPropertyGroup(bpy.types.PropertyGroup):
+    bl_idname = "BVTK_Bprop_SetAttribPropertyGroupType"
+
+    attrib_component_map = {'Scalars': 1, 'Vectors': 3, 'Normals': 3, 'TCoords': 3, 'Tensors': 9, \
+            'GlobalIds': 1, 'PedigreeIds': 1, 'Edgeflag': 1}
+
+    cache_id: bpy.props.IntProperty(default=0)
+    active_field: bpy.props.StringProperty(default='')
+
+    def get_data_attributes(self, context):
+        '''Generate array of possible attributes to set an array to
+        '''
+        vtk_attributes = self.attrib_component_map.keys()
+        vtk_field_types = ['Point', 'Cell']
+        array_icons = {'Point': 'VERTEXSEL', 'Cell': 'FACESEL'}
+        
+        items = []
+        for field in vtk_field_types:
+            for attribute in vtk_attributes:
+                p_descr = ' '.join([field, 'data', attribute.lower(), 'attribute'])
+                items.append(('_'.join([field, attribute]), attribute, p_descr, array_icons[field], len(items)))
+
+        return items
+    
+    data_attribute: bpy.props.EnumProperty(items=get_data_attributes, name="Attribute")
+
+    def get_arrays(self, context):
+        '''Update array selections based on attribute selected
+        '''
+        array_icons = {'Point': 'VERTEXSEL', 'Cell': 'FACESEL'}
+        node = BVTKCache.get_node(self.cache_id)
+        in_node, vtkobj = node.get_input_node('input')
+        items = []
+        if not vtkobj is None:
+            vtkobj = resolve_algorithm_output(vtkobj)
+            
+            data_attribute = self.data_attribute.split('_')
+            # Point Data
+            if data_attribute[0] == 'Point':
+                if not hasattr(vtkobj, 'GetPointData'): 
+                    return
+                array_data = vtkobj.GetPointData()
+            elif data_attribute[0] == 'Cell':
+                if not hasattr(vtkobj, 'GetCellData'): 
+                    return
+                array_data = vtkobj.GetCellData()
+            else:
+                l.error("bad attribute field type")
+            
+            # Loop through data arrays for point/cell field
+            items = [('E', 'None', '')]
+            names = []
+            attrib_dim = self.attrib_component_map[data_attribute[1]]
+            narray = array_data.GetNumberOfArrays()
+            for i in range(narray):
+                data_array = array_data.GetArray(i)
+                array_type = data_array.GetDataType()
+                array_name = data_array.GetName()
+                array_dim = data_array.GetNumberOfComponents()
+
+                # Verify array dimensions agree with attribute dimensions
+                if attrib_dim == array_dim or attrib_dim < 0:
+                    prop_name = str(array_name)
+                    p_descr = ''.join([data_attribute[0], '{:d}_'.format(len(items)), str(array_name)])
+                    icon = array_icons[data_attribute[0]]
+                    names.append(prop_name)
+                    items.append((prop_name, array_name, p_descr)) 
+                
+            if len(items) == 1:
+                items = [('E', 'No valid data arrays', 'error', 'ERROR', 0)]
+
+        else:
+            items.append(('E', 'Input has no vtkobj (try updating)', 'error', 'ERROR', 0))
+
+        return items
+
+    def array_update(self, context):
+        self.active_field = self.data_field
+
+    data_field: bpy.props.EnumProperty(items=get_arrays, name="Array", update=array_update)
+
+
+class VTKAssignAttribute(Node, BVTK_Node):
+
+    bl_idname = 'VTKAssignAttributeType'
+    bl_label  = 'vtkAssignAttribute'
+    
+    b_properties: bpy.props.BoolVectorProperty(name="", size=1, get=BVTK_Node.get_b, set=BVTK_Node.set_b)
+
+    attrib_collection: bpy.props.CollectionProperty(name="Attributes", type=BVTK_Bprop_SetAttribPropertyGroup, description="Attributes to set active")
+
+    def m_properties( self ):
+        return [ 'attrib_collection' ]
+    def m_connections( self ):
+        return (['input'], ['output'], [], []) 
+
+    def setup(self):
+        # Create drop downs
+        self.attrib_collection.add()
+        self.attrib_collection[-1].cache_id = self.node_id
+
+    def apply_properties(self, vtkobj):
+        '''Sets properties from node to vtkobj based on property name'''
+        # https://vtk.org/doc/release/6.1/html/vtkAssignAttribute_8h_source.html
+        attrib_location = {"Point": 0, "Cell": 1, "Vertex": 2, "Edge": 3}
+        # https://vtk.org/doc/release/6.1/html/classvtkDataSetAttributes.html
+        attrib_type = {'Scalars': 0, 'Vectors': 1, 'Normals': 2, 'TCoords': 3, 'Tensors': 4, \
+            'GlobalIds': 5, 'PedigreeIds': 6, 'Edgeflag': 7}
+
+        for i in range(len(self.attrib_collection)):
+            attribute = self.attrib_collection[i].data_attribute.split('_')
+            # Calling self.attrib_collection[i].data_field appearently triggers an enum item update
+            # which will error during an update run since output vtkobj wont exist. adding .split seems
+            # to avoid this.
+            name_ = self.attrib_collection[i].active_field
+            aloc_ = attrib_location[attribute[0]]
+            atype_ = attrib_type[attribute[1]]
+
+            if not name_ == 'E':
+                vtkobj.Assign(name_, atype_, aloc_)
+            else:
+                vtkobj.Assign("", atype_, aloc_)
+
+    def draw_buttons(self, context, layout):
+        '''Draw button'''
+        in_node, vtkobj = self.get_input_node('input')
+        if not in_node:
+            reload_check = False
+            layout.label(text='Connect a node')
+        elif not vtkobj:
+            layout.label(text='Input has no vtkobj (try updating)')
+        else:
+            vtkobj = resolve_algorithm_output(vtkobj)
+            if not vtkobj:
+                layout.label(text='Failed to resolve algorithm ouput (try updating)')
+            else:
+                # Add data arrays
+                for aindx in range(len(self.attrib_collection)):
+                    layout.prop(self.attrib_collection[aindx], "data_attribute")
+                    layout.prop(self.attrib_collection[aindx], "data_field")
+
+add_class(BVTK_Bprop_SetAttribPropertyGroup)
+TYPENAMES.append('BVTK_Bprop_SetAttribPropertyGroupType')
+add_class( VTKAssignAttribute )        
+TYPENAMES.append('VTKAssignAttributeType' )
