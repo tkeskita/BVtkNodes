@@ -1,8 +1,7 @@
 # Installation of VTK in Blender 3.6 Python via Pip
 
 Note: These instructions also likely work for other Blender and VTK
-versions, but the versions applied below are the ones tested for
-BVTKNodes.
+versions, but the versions applied below are the ones used as an example.
 
 # On Windows
 

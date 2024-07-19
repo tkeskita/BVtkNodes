@@ -9,6 +9,9 @@ This information applies to the
 Version 0.11
 ------------
 
+- 2024-07-19: BVTKNodes upgrade to Blender LTS version 4.2
+  (Python 3.11) required no class or VTK changes.
+
 - 2023-12-31: Motion Blur is available in VTK To Blender Mesh
   Node. Mesh motion blur is implemented using Blender Shape
   Keys, based on mesh point transformation by a vector point field.

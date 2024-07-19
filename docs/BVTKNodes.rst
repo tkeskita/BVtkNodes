@@ -97,7 +97,7 @@ This version was demonstrated in the
 2. `tkeskita/bvtknodes <https://github.com/tkeskita/BVtkNodes>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Upgraded and developed version for Blender 3.6 LTS series using VTK
+Upgraded and developed version for Blender 4.2 or 3.6 LTS series using VTK
 9.2.6. Uses a new update system and a new mesh generator node
 *VTK To Blender Mesh* instead of the legacy *VTK To Blender* node.
 
@@ -606,7 +606,7 @@ This node converts 3D VTK image data (*vtkImageData*) into OpenVDB
 grids. The VDB data is then automatically imported into Blender as a
 Volume Object, ready to be used in volumetric rendering using the
 *Principled Volume Shader*.  This node requires `pyopenvdb` in
-Blender, now available in Blender version 3.6.
+Blender, now available in Blender version 3.6 and later.
 
 Please see VTK To OpenVDB Exporter below for description of field names.
 
