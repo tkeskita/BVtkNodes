@@ -1301,6 +1301,13 @@ def delete_objects_startswith(ob_name):
     for ob in objects:
         ob.select_set(True)
         l.debug("Selected object %r" % ob.name)
+        ob_data = ob.data
+        if ob_data is None:
+            continue
+        if ob_data.users > 1:
+            continue
+        if isinstance(ob_data, bpy.types.Volume):
+            bpy.data.volumes.remove(ob_data)
     bpy.ops.object.delete(confirm=False)
 
 
