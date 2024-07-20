@@ -180,6 +180,12 @@ class BVTKNodes_Settings(bpy.types.PropertyGroup):
                 "Update changes to all nodes automatically",
                 2,
             ),
+            (
+                "animation-only-updates",
+                "Animation Only Updates",
+                "Update nodes automatically only when frame changes",
+                3,
+            ),
         },
         default="update-current",
     )
@@ -315,7 +321,7 @@ def on_frame_change(scene, depsgraph):
 
     # Restore update_mode and update if needed
     bpy.context.scene.bvtknodes_settings.update_mode = update_mode
-    if update_mode == "update-all":
+    if (update_mode == "update-all") or (update_mode == "animation-only-updates"):
         cache.BVTKCache.update_all()
 
     bpy.context.scene.bvtknodes_settings.on_frame_change_is_running = False
@@ -326,6 +332,10 @@ def on_frame_change(scene, depsgraph):
 def on_depsgraph_update(scene, depsgraph):
     """Updates done after depsgraph changes"""
 
+    update_mode = bpy.context.scene.bvtknodes_settings.update_mode
+    if update_mode == "animation-only-updates":
+        return
+    
     import time
 
     # Call on_frame_change() only when it's not anymore running.
