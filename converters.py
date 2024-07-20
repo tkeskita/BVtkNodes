@@ -1293,39 +1293,52 @@ def count_active_voxels(grids):
     return n
 
 
-def delete_objects_startswith(ob_name):
+def delete_objects_startswith(ob_name, export_file_sequence = False):
     """Deletes object(s) whose name starts with argument object name"""
 
-    bpy.ops.object.select_all(action="DESELECT")
-    objects = [ob for ob in bpy.data.objects if ob.name.startswith(ob_name)]
+    if export_file_sequence:
+        objects = [ob for ob in bpy.data.objects if ob.name.startswith(ob_name)]
+    else:
+        ob = bpy.data.objects.get(ob_name)
+        objects = [ob] if ob else []
+
     for ob in objects:
-        ob.select_set(True)
-        l.debug("Selected object %r" % ob.name)
+        l.debug("Deleting object %r" % ob.name)
         ob_data = ob.data
+
+        bpy.context.collection.objects.unlink(ob)
+        bpy.data.objects.remove(ob)
+
         if ob_data is None:
             continue
-        if ob_data.users > 1:
+        if ob_data.users > 0:
             continue
         if isinstance(ob_data, bpy.types.Volume):
             bpy.data.volumes.remove(ob_data)
-    bpy.ops.object.delete(confirm=False)
-
+            
 
 def import_volume_object(
-    ob_name, filename, bounding_box=None, dims=None, generate_material=False
+    ob_name, filename, bounding_box=None, dims=None, generate_material=False, export_file_sequence = False
 ):
     """Import OpenVDB volume object from given file name into scene"""
 
     bpy.ops.object.volume_import(filepath=filename)
-    objects = [ob for ob in bpy.data.objects if ob.name.startswith(ob_name)]
+    if export_file_sequence:
+        objects = [ob for ob in bpy.data.objects if ob.name.startswith(ob_name)]
 
-    if len(objects) == 0:
-        l.error("OpenVDB import failed for %r" % filename)
-        return None
-    elif len(objects) > 1:
-        l.warning("Several objects name starts with %r, using last." % ob_name)
+        if len(objects) == 0:
+            l.error("OpenVDB import failed for %r" % filename)
+            return None
+        elif len(objects) > 1:
+            l.warning("Several objects name starts with %r, using last." % ob_name)
 
-    ob = objects[-1]
+        ob = objects[-1]
+    else:
+        ob = bpy.data.objects.get(ob_name)
+        if ob is None:
+            l.error("OpenVDB import failed for %r" % filename)
+            return None
+
     l.debug("Imported volume object: %s" % ob.name)
 
     # Final object transforms
@@ -1449,8 +1462,8 @@ def vtk_image_data_to_volume_object(node, imgdata):
 
     bbox = imgdata.GetBounds()
     dims = imgdata.GetDimensions()
-    delete_objects_startswith(node.ob_name)
-    import_volume_object(node.ob_name, filename, bbox, dims, node.generate_material)
+    delete_objects_startswith(node.ob_name, node.export_file_sequence)
+    import_volume_object(node.ob_name, filename, bbox, dims, node.generate_material, node.export_file_sequence)
 
 
 class BVTK_Node_VTKToOpenVDBExporter(Node, BVTK_Node):
