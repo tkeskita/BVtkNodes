@@ -1311,7 +1311,6 @@ def import_volume_object(
 
     bpy.ops.object.volume_import(filepath=filename)
     objects = [ob for ob in bpy.data.objects if ob.name.startswith(ob_name)]
-
     if len(objects) == 0:
         l.error("OpenVDB import failed for %r" % filename)
         return None
@@ -1442,8 +1441,16 @@ def vtk_image_data_to_volume_object(node, imgdata):
 
     bbox = imgdata.GetBounds()
     dims = imgdata.GetDimensions()
+
+    # Mark volume import as active, to avoid infinite recursion.
+    # Object deletion seems to trigger depsgraph update, which
+    # would results in infinite loop here.
+    bpy.context.scene.bvtknodes_settings.volume_import_is_running = True
+    l.debug("Set volume_import_is_running to True")
     delete_objects_startswith(node.ob_name)
     import_volume_object(node.ob_name, filename, bbox, dims, node.generate_material)
+    bpy.context.scene.bvtknodes_settings.volume_import_is_running = False
+    l.debug("Set volume_import_is_running to False")
 
 
 class BVTK_Node_VTKToOpenVDBExporter(Node, BVTK_Node):

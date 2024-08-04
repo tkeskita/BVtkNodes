@@ -190,6 +190,18 @@ class BVTKNodes_Settings(bpy.types.PropertyGroup):
         default=False,
     )
 
+    on_depsgraph_update_is_running: bpy.props.BoolProperty(
+        name="on_depsgraph_update() is running",
+        description="Internal boolean state to detect whether on_depsgraph_update() is running",
+        default=False,
+    )
+
+    volume_import_is_running: bpy.props.BoolProperty(
+        name="Volume Import is running",
+        description="Internal boolean state to detect whether volume import process is running",
+        default=False,
+    )
+
 
 @persistent
 def on_file_loaded(scene):
@@ -257,10 +269,16 @@ compareGeneratedAndCurrentVTKVersion()
 @persistent
 def on_frame_change(scene, depsgraph):
     """Updates done after frame number (time step) changes"""
+
     l.debug(
-        "Triggered frame update at frame %d (Update Mode %r)"
+        "Frame update was triggered at frame %d (Update Mode %r)"
         % (scene.frame_current, str(scene.bvtknodes_settings.update_mode))
     )
+
+    # Do nothing if frame update has already been triggered
+    if bpy.context.scene.bvtknodes_settings.on_frame_change_is_running:
+        l.debug("-- Frame update canceled since it's already running")
+        return None
 
     # Set internal guard state to avoid running this also from
     # on_depsgraph_update()
@@ -319,16 +337,33 @@ def on_frame_change(scene, depsgraph):
         cache.BVTKCache.update_all()
 
     bpy.context.scene.bvtknodes_settings.on_frame_change_is_running = False
-    l.debug("Frame update completed!")
+    l.debug("Frame %d update completed!" % scene.frame_current)
 
 
 @persistent
 def on_depsgraph_update(scene, depsgraph):
     """Updates done after depsgraph changes"""
 
-    import time
+    l.debug(
+        "Depsgraph update was triggered at frame %d (Update Mode %r)"
+        % (scene.frame_current, str(scene.bvtknodes_settings.update_mode))
+    )
+
+    # Do nothing if depsgraph update has already been triggered
+    if bpy.context.scene.bvtknodes_settings.on_depsgraph_update_is_running:
+        l.debug("-- on_depsgraph_update canceled since it's already running")
+        return None
+
+    # Do nothing if depsgraph update was triggered from volume_import()
+    if bpy.context.scene.bvtknodes_settings.volume_import_is_running:
+        l.debug("-- on_depsgraph_update canceled since volume import process is running")
+        return None
+
+    # Set internal guard state to avoid recursion loops
+    bpy.context.scene.bvtknodes_settings.on_depsgraph_update_is_running = True
 
     # Call on_frame_change() only when it's not anymore running.
+    import time
     i = 1
     while i > 0:
         if bpy.context.scene.bvtknodes_settings.on_frame_change_is_running:
@@ -345,6 +380,9 @@ def on_depsgraph_update(scene, depsgraph):
 
     l.debug("Depsgraph update, calling on_frame_change()")
     on_frame_change(scene, depsgraph)
+
+    bpy.context.scene.bvtknodes_settings.on_depsgraph_update_is_running = False
+    l.debug("Depsgraph update completed at frame %d!" % scene.frame_current)
 
 
 def custom_register_node_categories():
